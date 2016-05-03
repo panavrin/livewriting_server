@@ -3,10 +3,11 @@
 $(document).ready(function () {
     var resetlink = localServerLink + "textarea.html";
     var aboutlink = resetlink + "?aid=aboutechobin";
+    var textarea_obj = $("#livetext");
 
     "use strict";
-    $("#livetext").focus();
-    $("#livetext").attr("spellcheck", false);
+    textarea_obj.focus();
+    textarea_obj.attr("spellcheck", false);
     var articlelink = "dummylink.com/thisisdummylink";
     var writeModeFunc = function(){
          $('#initial-message').bPopup({
@@ -15,16 +16,16 @@ $(document).ready(function () {
             positionStyle: 'absolute',
             escClose :false
         });
-        $("#postdata").show(); // show the button if write mode 
+        $("#postdata").show(); // show the button if write mode
     };
     var readModeFunc = function(){
-        $("#postdata").hide(); // hide the button if read mode 
+        $("#postdata").hide(); // hide the button if read mode
         $("#reset").text("New");
     };
   // $("#livetext").autogrow();
+    textarea_obj.livewritingMessage = livewriting;
+    textarea_obj.livewritingMessage("create","textarea", {name: "Sang's first run",   writeMode:writeModeFunc, readMode:readModeFunc});
 
-    $("#livetext").livewritingMessage("create","textarea", {name: "Sang's first run",   writeMode:writeModeFunc, readMode:readModeFunc});
- 
     $("#postdata").button().css({ width: '150px', margin:'5px'}).click(function(){
          $('#post-message').bPopup({
             modalClose: false,
@@ -41,13 +42,13 @@ $(document).ready(function () {
                 opacity: 0.7,
                 positionStyle: 'absolute',
                 escClose :false
-            });  
-            
-            $("#post-link").text(articlelink);    
+            });
+
+            $("#post-link").text(articlelink);
             ZeroClipboard.setData( "text/plain", articlelink);
 
         });
-        
+
     });
     $("#reset").button().css({ width: '150px', margin:'5px'}).click(function(){
         window.open(resetlink, '_self');
@@ -55,9 +56,9 @@ $(document).ready(function () {
 
     $("#start").button().css({ width: '150px', margin:'5px'}).click(function(){
         $('#initial-message').bPopup().close();
-        $("#livetext").livewritingMessage("reset");
-        $("#livetext").focus();
-        $("#reset").show(); // hide the button if read mode 
+        textarea_obj.livewritingMessage("reset");
+        textarea_obj.focus();
+        $("#reset").show(); // hide the button if read mode
     });
 
     $(".about").button().css({ width: '150px', margin:'5px'}).click(function(){
@@ -75,7 +76,7 @@ $(document).ready(function () {
     } );
 
     $("#copytoclipboard").button().css({width:'250px', margine:'5px'});
-   
+
     var slider = $("#slider").slideReveal({
         width: 250,
         push: false,
@@ -99,12 +100,12 @@ $(document).ready(function () {
         //    console.log(obj);
             $("#trigger").html('&lt;');
             obj.toggleClass(".left-shadow-overlay");
-            $("#livetext").focus();
+            textarea_obj.focus();
             obj.css({opacity:'0.5'});
         }
     });
-    
-    $("#livetext").click(function(){
+
+    textarea_obj.click(function(){
         slider.slideReveal("hide");
     });
 });

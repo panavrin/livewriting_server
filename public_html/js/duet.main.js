@@ -36,7 +36,7 @@ $(document).ready(function () {
    //    $("#reset").text("New");
    };
 
-   editor.livewritingMessage = $.fn.livewritingMessage;
+   editor.livewritingMessage = livewriting;
    editor.livewritingMessage("create", "codemirror", {name: "Sang's first run in CodeMirror",   writeMode:writeModeFunc, readMode:readModeFunc});
 
    $("#postdata").button().css({ width: '150px', margin:'5px'}).click(function(){

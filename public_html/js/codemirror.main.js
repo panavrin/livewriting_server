@@ -39,7 +39,7 @@ $(document).ready(function () {
 
     };
 
-    editor.livewritingMessage = $.fn.livewritingMessage;
+    editor.livewritingMessage = livewriting;
     editor.livewritingMessage("create", "codemirror", {name: "Sang's first run in CodeMirror",   writeMode:writeModeFunc, readMode:readModeFunc});
 
 
