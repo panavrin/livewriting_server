@@ -1333,7 +1333,6 @@ else{
         var inserted = new Array(lw_histogram_bin_number).fill(0);
         var removed = new Array(lw_histogram_bin_number).fill(0);
         var maxChange = -1;
-
         for (var i=0; i< it.lw_data.length; i++){
           if(it.lw_data[i].p != "c")
             continue;
@@ -1360,11 +1359,13 @@ else{
               inserted[index] += length;
             }
           }
-          if(length > maxChange)
-            maxChange = length;
+          if(inserted[index] > maxChange)
+            maxChange = inserted[index];
+          if(removed[index] > maxChange)
+            maxChange = removed[index];
         }
         var bin_size = canvas_histogram_width / lw_histogram_bin_number;
-        if(DEBUG)console.log("binsize:" + bin_size);
+        if(DEBUG)console.log("binsize:" + bin_size  + " maxChange:" + maxChange);
         var value = 0;
         for (var i=0; i< lw_histogram_bin_number; i++){
           if(inserted[i]>0){
@@ -1378,11 +1379,8 @@ else{
             ctx.fillStyle = "#EB5555";
             ctx.fillRect(bin_size*i,canvas_histogram_height/2,bin_size,canvas_histogram_height/2* value);
             if(DEBUG)console.log("i:" + i + ", removed:" + removed[i] + " value: " + value);
-
           }
         }
-
-
       }
       ,
       playbackbyJson = function(it,json_file){
