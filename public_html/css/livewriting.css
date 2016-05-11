@@ -26,11 +26,11 @@
 }
 
 .ui-button-text{
-    font-family: sans-serif!important;
+    font-family: sans-serif;
     font-weight:normal!important;
     color:white!important;
-    background: #555!important;
-    border-radius: 7px!important;
+    background: #333!important;
+    border-radius: 7px;
 }
 .ui-button-text-toggle{
     background: #960707!important;

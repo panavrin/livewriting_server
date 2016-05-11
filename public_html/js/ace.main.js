@@ -43,7 +43,8 @@ $(document).ready(function () {
 
            var serverTime = new Date(Number(response));
           // var localTime = new Date();
-
+           useroptions["livewriting_consent"] = $("#livewriting_consent").prop("checked");
+           useroptions["url"] = "echobin.com";
            useroptions["servertime"] = response;
            editor.livewritingMessage("post","/post", useroptions, function(success, aid){
              $('#post-message').bPopup().close();

@@ -1086,7 +1086,7 @@ else{
           }
           else{
             $(".ui-slider-inactive-region").css("background-color", "#fff");
-            $("div.livewriting_slider").css("background","#D4C3C3");
+            $("div.livewriting_slider").css("background","#E4E3E3");
           }
         });
       },

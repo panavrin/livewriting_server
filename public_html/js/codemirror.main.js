@@ -58,8 +58,9 @@ $(document).ready(function () {
 
             var serverTime = new Date(Number(response));
            // var localTime = new Date();
-
-            useroptions["servertime"] = response;
+           useroptions["livewriting_consent"] = $("#livewriting_consent").prop("checked");
+           useroptions["url"] = "echobin.com";
+           useroptions["servertime"] = response;
             editor.livewritingMessage("post","/post", useroptions, function(state, aid){
            $('#post-message').bPopup().close();
             articlelink = resetlink+"?aid="+aid;
