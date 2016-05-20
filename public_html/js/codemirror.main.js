@@ -10,7 +10,8 @@ $(document).ready(function () {
     //var editor = $("#livetext");
     var editor = CodeMirror.fromTextArea(document.getElementById("livetext"), {
         lineNumbers: false,
-        styleActiveLine: false,
+        styleActiveLine: true,
+        scrollbarStyle: "simple",
         matchBrackets: false,
         smartIndent : false,
         indentUnit:0,
@@ -29,13 +30,11 @@ $(document).ready(function () {
             escClose :false
         });
         $("#postdata").show(); // show the button if write mode
-        $("#slider_toggle").hide();
     };
 
     var readModeFunc = function(){
         $("#postdata").hide(); // hide the button if read mode
     //    $("#reset").text("New");
-        $("#slider_toggle").show(); // show the button if write mode
 
     };
 
@@ -79,15 +78,7 @@ $(document).ready(function () {
         });
     });
 
-    $("#slider_toggle").button().css({ width: '150px', margin:'5px'})
-    .click(function(){
-      var time_slider = $(".livewriting_navbar");
 
-      if(time_slider.length > 0){
-        //$(".livewriting_slider_wrapper").toggleClass("hidden");
-        $(".livewriting_navbar").toggle();
-      }
-    })
 
     $("#reset").button().css({ width: '150px', margin:'5px'}).click(function(){
         window.open(resetlink, '_self');

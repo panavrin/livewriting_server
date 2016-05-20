@@ -10,11 +10,15 @@
   position: absolute;;
   bottom: 40px;
   width: 90%;
-  left: 5%;
+  right: 5%;
   background: black;
   border-radius: 15px;
   opacity: 1;
   z-index:100000;
+}
+
+.navbar_text{
+  font-family: sans-serif!important;
 }
 
 .ui-slider-handle{
@@ -26,7 +30,7 @@
 }
 
 .ui-button-text{
-    font-family: sans-serif;
+    font-family: sans-serif!important;
     font-weight:normal!important;
     color:white!important;
     background: #333!important;
@@ -82,8 +86,9 @@ div.livewriting_slider{
 #lw_playback_slider{
   display:none;
   position:absolute;
-  right:-20px;
+  right:20px;
   top:-25px;
+  z-index:2;
 }
 
 div.livewriting_slider_wrapper{
@@ -93,8 +98,27 @@ div.livewriting_slider_wrapper{
 }
 
 .histogram_slider_wrapper{
-  padding: 12px 0 15px 0;
+  padding: 10px 0 10px 0;
 }
+.cm-change-markers {
+    background: #ABFF9C;
+}
+
+#lw-jog-shuttle{
+  position:absolute;
+  width:100px;
+  top:50%;
+  right:20px;
+}
+
+.livewriting_navbar_expand{
+  position:absolute;
+  bottom:-20px;
+  right:-20px;
+  opacity: 0.5;
+}
+
+
 div.livewriting_toolbar_wrapper{
   vertical-align: middle;
   text-align: center;
