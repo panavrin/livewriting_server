@@ -7,8 +7,21 @@ $(document).ready(function () {
     function cursorAct(cm){
         console.log("cursorAct : " + cm.getSelection());
     }
+
+    var getUrlVars =  function(){
+        var vars = [], hash;
+        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+        for(var i = 0; i < hashes.length; i++)
+        {
+            hash = hashes[i].split('=');
+            vars.push(hash[0]);
+            vars[hash[0]] = hash[1];
+        }
+        return vars;
+    }
     //var editor = $("#livetext");
-    var editor = CodeMirror.fromTextArea(document.getElementById("livetext"), {
+
+    var options = {
         lineNumbers: false,
         styleActiveLine: true,
         scrollbarStyle: "simple",
@@ -18,7 +31,16 @@ $(document).ready(function () {
         lineWrapping:true,
         mode:"Plain Text",
         height:"100%"
-    });
+    };
+
+    var parameters = getUrlVars();
+
+    if (parameters.syntax != "undefined"){
+      options.mode = parameters.syntax;
+    }
+
+
+    var editor = CodeMirror.fromTextArea(document.getElementById("livetext"),options);
 
     editor.setSize("96%", "98%");
 

@@ -927,9 +927,10 @@ else{
         it.lw_sliderValue = value;
         $(".livewriting_slider").slider("value",value);
 
-        $("#lw-current-time").text(convertTimeToString(value));
+        $(".lw-current-time").text(convertTimeToString(value));
         if ( value > it.lw_endTime){
           livewritingPause(it);
+          it.lw_preJogState = false;
           return;
         }
         setTimeout(function(){
@@ -945,7 +946,7 @@ else{
           }
         };
 
-        $( "#lw_toolbar_play" ).button( "option", options );
+        $( ".lw_toolbar_play" ).button( "option", options );
         it.lw_pause = false;
         var time  = $(".livewriting_slider").slider("value");
         var currentTime = (new Date()).getTime();
@@ -968,7 +969,7 @@ else{
         it.lw_data_index = it.lw_data.length-1;
         livewritingPause(it);
         $(".livewriting_slider").slider("value", max);
-        $("#lw-current-time").text(convertTimeToString(max));
+        $(".lw-current-time").text(convertTimeToString(max));
       //  updateSlider(it);
       },
       sliderGoToBeginning = function(it){
@@ -982,7 +983,7 @@ else{
         it.lw_data_index = 0;
         livewritingPause(it);
         $(".livewriting_slider").slider("value", 0);
-        $("#lw-current-time").text(convertTimeToString(0));
+        $(".lw-current-time").text(convertTimeToString(0));
         //updateSlider(it);
       },
       livewritingPause = function(it){
@@ -994,7 +995,7 @@ else{
             primary: "ui-icon-play"
           }
         };
-        $("#lw_toolbar_play" ).button( "option", options );
+        $(".lw_toolbar_play" ).button( "option", options );
       },
       convertTimeToString  = function(time){
         var totalSec = time/ 1000;
@@ -1011,17 +1012,19 @@ else{
         var time = convertTimeToString(it.lw_endTime);
 //        navbar.draggable(); // this line requires jquery ui
         navbar.append("<div class='livewriting_slider_wrapper'><div class = 'livewriting_slider'></div></div>");
-        navbar.append('<div class="livewriting_toolbar_wrapper"><div class="livewriting_navbar_buttons_left"><button id="lw_toolbar_play" class = "lw_toolbar_button">pause</button><button id="lw_toolbar_beginning" class = "lw_toolbar_button">go to beginning</button><button id="lw_toolbar_end" class = "lw_toolbar_button">go to end</button></div><div class="livewriting_navbar_buttons_right"><div><span id="lw-current-time" class="navbar_text"></span> / '+time+'&nbsp;<button id="lw_toolbar_stat" class = "lw_toolbar_button">Show Histogram</button><button id="lw_jogshuttle_toggle" class = "lw_toolbar_button">Toggle Jog Shuttle</button><button id="lw_toolbar_skip" class = "lw_toolbar_button">skip inactive parts</button><!--<button id="lw_toolbar_setting" class = "lw_toolbar_button">settings</button>--><button class = "lw_toolbar_button livewriting_speed navbar_text lw_toolbar_speed" >'+it.lw_playback+'&nbsp;X</button><div id="lw_playback_slider"></div><button class = "lw_toolbar_button " id="lw-hide-navbar">Hide</button></div></div></div>');
+        navbar.append('<div class="livewriting_toolbar_wrapper"><div class="livewriting_navbar_buttons_left"><button class = "lw_toolbar_button lw_toolbar_play">pause</button><button id="lw_toolbar_beginning" class = "lw_toolbar_button">go to beginning</button><button id="lw_toolbar_end" class = "lw_toolbar_button">go to end</button></div><div class="livewriting_navbar_buttons_right"><div><span class="lw-current-time navbar_text"></span> / '+time+'&nbsp;<button id="lw_toolbar_stat" class = "lw_toolbar_button">Show Histogram</button><button id="lw_jogshuttle_toggle" class = "lw_toolbar_button">Toggle Jog Shuttle</button><button id="lw_toolbar_skip" class = "lw_toolbar_button">skip inactive parts</button><!--<button id="lw_toolbar_setting" class = "lw_toolbar_button">settings</button>--><button class = "lw_toolbar_button livewriting_speed navbar_text lw_toolbar_speed" >'+it.lw_playback+'&nbsp;X</button><div id="lw_playback_slider"></div><button class = "lw_toolbar_button " id="lw-hide-navbar">Hide</button></div></div></div>');
 
         $(".livewriting_slider").append("<canvas id='livewriting_histogram' width="+canvas_histogram_width+" height="+canvas_histogram_height+"></canvas>");
         $("#lw-nav-bar-toggle").hide();
+        $("#lw-toggle-time").hide();
+        $("#lw-toggle-play").hide();
+
         $("#lw-hide-navbar").button({text: false,
           icons: {
             primary: "ui-icon-triangle-1-s"
           }
         }).click(function(){
-          $(".livewriting_navbar_inner").toggle();
-          $("#lw-nav-bar-toggle").toggle();
+          toggleNavBar();
         });
         $("#lw_jogshuttle_toggle").button({
           text: false,
@@ -1100,7 +1103,7 @@ else{
 
           $(".livewriting_speed").text(it.lw_playback);
         });
-        $( "#lw_toolbar_play" ).button({
+        $( ".lw_toolbar_play" ).button({
           text: false,
           icons: {
             primary: "ui-icon-pause"
@@ -1225,7 +1228,7 @@ else{
             var value = lw_slider.slider("value");
             value += it.lw_jogValue * SLIDER_UPDATE_INTERVAL * 20;
             lw_slider.slider('value',value);
-            $("#lw-current-time").text(convertTimeToString(value));
+            $(".lw-current-time").text(convertTimeToString(value));
 
             lw_slider.slider('option','slide').call(lw_slider,null,{ handle: $('.ui-slider-handle', lw_slider), value: value });
      },SLIDER_UPDATE_INTERVAL /2);
@@ -1246,6 +1249,13 @@ else{
 
       }
       ,
+      toggleNavBar = function(){
+        $(".livewriting_navbar_inner").toggle();
+        $("#lw-nav-bar-toggle").toggle();
+        $("#lw-toggle-time").toggle();
+        $("#lw-toggle-play").toggle();
+      }
+      ,
       createNavBar = function(it){
         if(DEBUG)console.log("create Navigation Bar");
         var end_time = it.lw_data[it.lw_data.length-1]["t"];
@@ -1255,14 +1265,14 @@ else{
           if($('.ace_editor').length>1){
             if(DEBUG) console.error("For now live writing does not support multiple editors.");
           }
-          $('.ace_editor').after("<div class = 'livewriting_navbar'><div class ='livewriting_navbar_expand'><button id ='lw-nav-bar-toggle' class = 'lw_toolbar_button'>toggle</button></div><div class ='livewriting_navbar_inner'></div></div>");
+          $('.ace_editor').after("<div class = 'livewriting_navbar'><div class ='livewriting_navbar_expand'><input type=text id='lw-hidden-inputfield' style='opacity:0;'><span id ='lw-toggle-time' class='lw-current-time navbar_text' style='color:gray;'></span>&nbsp;&nbsp;<button id ='lw-toggle-play'class = 'lw_toolbar_button lw_toolbar_play'>pause</button><button id ='lw-nav-bar-toggle' class = 'lw_toolbar_button'>toggle</button></div><div class ='livewriting_navbar_inner'></div></div>");
           $('.ace_editor').after("<div id='lw-jog-shuttle'>");
 
         }else if ( it.lw_type == "codemirror"){
           if($('.CodeMirror').length>1){
             if(DEBUG) console.error("For now live writing does not support multiple editors.");
           }
-          $('.CodeMirror').after("<div class = 'livewriting_navbar'><div class ='livewriting_navbar_expand'><button id ='lw-nav-bar-toggle'  class = 'lw_toolbar_button'>toggle</button></div><div class ='livewriting_navbar_inner'></div></div>");
+          $('.CodeMirror').after("<div class = 'livewriting_navbar'><div class ='livewriting_navbar_expand'><input type=text id='lw-hidden-inputfield' style='opacity:0;'><span id ='lw-toggle-time' class='lw-current-time navbar_text'></span>&nbsp;&nbsp;<button id = 'lw-toggle-play' class = 'lw_toolbar_button lw_toolbar_play'>pause</button><button id ='lw-nav-bar-toggle'  class = 'lw_toolbar_button'>toggle</button></div><div class ='livewriting_navbar_inner'></div></div>");
           $('.CodeMirror').after("<div id='lw-jog-shuttle'>");
         } // end of codemirror.
         $("#lw-nav-bar-toggle").button({text: false,
@@ -1270,8 +1280,7 @@ else{
             primary: "ui-icon-triangle-1-n"
           }
         }).click(function(){
-          $(".livewriting_navbar_inner").toggle();
-          $("#lw-nav-bar-toggle").toggle();
+          toggleNavBar();
         });
         var navbar = $('.livewriting_navbar_inner');
         createJogShuttle(it, "lw-jog-shuttle");
@@ -1331,6 +1340,7 @@ else{
                          it.setOption("placeholder","");
                       }
                   }
+
                   playbackbyAid(it, aid);
                   it.lw_writemode = false;
                   if(it.lw_settings.readMode != null)
@@ -1602,7 +1612,41 @@ else{
           it.session.getMode().getNextLineIndent = function(){return "";}
           it.session.getMode().checkOutdent = function(){return false;}
         }
-        livewritingResume(it);
+
+        var autoplay = getUrlVar('autoplay');
+        if (autoplay !== "false"){
+          livewritingResume(it);
+        }
+        else{
+          $(".lw-current-time").text(convertTimeToString(0));
+          livewritingPause(it);
+        }
+        document.body.onkeydown = function(e){
+            if(e.keyCode==nonTypingKey.SPACE){
+              // see if the editor is focused or not.
+              // let's do codemirror for now.
+              if(it.lw_pause){
+                if(!it.hasFocus()){
+                    livewritingResume(it);
+                }
+              }
+              else { //if playing(
+
+                $("#lw-hidden-inputfield").focus();
+                livewritingPause(it);
+              }
+
+
+            }
+        };
+
+
+        var navbar = getUrlVar('navbar');
+        if (navbar === "false"){
+          // hide navbar
+          toggleNavBar();
+        }
+
         var startTime = currTime + it.lw_data[0]['t']/it.lw_playback;
         if(DEBUG)console.log("1start:" + startTime + " time: "+ currTime  + " interval:" + it.lw_data[0]['t']/it.lw_playback+ " currentData:",JSON.stringify(it.lw_data[0]));
         // let's draw inactive region.
