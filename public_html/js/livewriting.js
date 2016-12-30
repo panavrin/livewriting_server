@@ -1435,33 +1435,35 @@ else{
           var data = getActionData(it);
           data["useroptions"] = useroptions;
           // Send the request
-          $.post(url, JSON.stringify(data), function(response, textStatus, jqXHR) {
-              // Live Writing server should return article id (aid)
-              if (respondFunc){
-                  var receivedData=JSON.parse(jqXHR.responseText);
-                  if (respondFunc)
-                      respondFunc(true, receivedData["aid"]);
-                  $(window).onbeforeunload = false;
-              }
+          console.log(JSON.stringify(data));
+          $.ajax({
+            url:url,
+            type:"post",
+            data:JSON.stringify(data),
+            contentType:"text/plain",
+            success: function(response, textStatus, jqXHR) {
+                // Live Writing server should return article id (aid)
+                if (respondFunc){
+                    var receivedData=JSON.parse(jqXHR.responseText);
+                    if (respondFunc)
+                        respondFunc(true, receivedData["aid"]);
+                    $(window).onbeforeunload = false;
+                }
 
-              $(window).onbeforeunload = false;
+                $(window).onbeforeunload = false;
 
-          }, "json")
-          .fail(function(response, textStatus, jqXHR) {
-                              var data=JSON.parse(jqXHR.responseText);
-
-              if (respondFunc)
-                  respondFunc(false,data);
+            }
           });
+
       },
       playbackbyAid = function(it, articleid, url){
 
           url = (url ? url : "play")
           if(DEBUG)console.log(it.lw_settings.name);
-          $.post(url, JSON.stringify({"aid":articleid}), function(response, textStatus, jqXHR) {
+          $.post(url, {"aid":articleid}, function(response, textStatus, jqXHR) {
               var json_file=JSON.parse(jqXHR.responseText);
               playbackbyJson(it, json_file);
-          }, "text")
+          }, "json")
           .fail(function( jqXHR, textStatus, errorThrown) {
               alert("LiveWritingAPI: play failed: " + jqXHR.responseText );
           });
