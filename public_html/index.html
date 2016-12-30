@@ -46,7 +46,7 @@
                 <button id = "signin3" class = "not-loggedin">Sign In</button>
             </div>
             <div class = "loggedin lw_hidden buttons">Signed in as <span class="signed-email"></span>
-              <button class = "yourwriting loggedin lw_hidden">Your LiveWriting</button>
+              <button class = "yourwriting ">Your LiveWriting</button>
             </div>
 
             <div style="text-align:left; font-size:12px; font-family:sans-serif;">
@@ -74,7 +74,7 @@
             <a ng-href="{{link+article._id}}">
               <button class = "btn btn-success btn-sm">Open</button>
             </a>
-            <button class = "btn btn-warning btn-sm" ng-click="alert('share');">Share</button>
+          <!--  <button class = "btn btn-warning btn-sm" ng-click="alert('share');">Share</button>-->
           </div>
           <div class = "col-md-7 col-lg-7 col-sm-7">
           <button class = "btn btn-default btn-sm" >{{timeToDate(article.localEndtime)}}</button>

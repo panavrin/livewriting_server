@@ -254,7 +254,7 @@ $(document).ready(function () {
               }
               else if (ValidateEmail(data)){
                 $(".authform").addClass("lw_hidden");
-                $(".profile").removeClass("lw_hidden");
+                $(".loggedin").removeClass("lw_hidden");
                 $(".signed-email").text(data);
                 if(posted_id != null){
                   updateEmailforArticle(posted_id, data);
