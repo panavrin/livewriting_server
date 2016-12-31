@@ -44,7 +44,7 @@ app.controller('my-livewriting-list',[ '$scope', '$http', function($scope, $http
   $scope.totallist = [];
   $scope.offset = 0;
   $scope.maxOffset = 0;
-  $scope.numArticlePerPage =2;
+  $scope.numArticlePerPage =10;
   $scope.error= false;
   $scope.link = resetlink + "?aid=";
   $scope.next = false;
@@ -87,8 +87,16 @@ app.controller('my-livewriting-list',[ '$scope', '$http', function($scope, $http
     day: "numeric", hour: "2-digit", minute: "2-digit"
   };
 
-  $scope.timeToDate = function(time){
-    return (new Date(time)).toLocaleDateString("en-us", dateoptions);
+  $scope.timeToDate = function(time, time2){
+    if(typeof time == "number"){
+      return (new Date(time)).toLocaleDateString("en-us", dateoptions);
+    }
+    else if(typeof time2 == "string"){
+      return (new Date(Number(time2))).toLocaleDateString("en-us", dateoptions);
+    }
+    else{
+      alert(time, time2);
+    }
   };
 }]);
 
@@ -384,36 +392,28 @@ $(document).ready(function () {
 
         var useroptions = {};
 
-        $.get("/whattime",  function(response) {
-            // Live Writing server should return article id (aid)
-           var serverTime = new Date(Number(response));
-           // var localTime = new Date();
-           useroptions["livewriting_consent"] = $("#livewriting_consent").prop("checked");
-           useroptions["url"] = "echobin.com";
-           useroptions["servertime"] = response;
-           if(logginedEmail)useroptions["email"] = logginedEmail;
-           editor.livewritingMessage("post","/post", useroptions, function(state, aid){
-           $('#post-message').bPopup().close();
+        useroptions["livewriting_consent"] = $("#livewriting_consent").prop("checked");
+        useroptions["url"] = localServerLink;
+
+        if(logginedEmail)useroptions["email"] = logginedEmail;
+        editor.livewritingMessage("post","/post", useroptions, function(state, aid){
+          $('#post-message').bPopup().close();
           articlelink = resetlink+"?aid="+aid;
           $('#post-complete-message').bPopup({
             modalClose: false,
             opacity: 0.7,
             positionStyle: 'absolute',
             escClose :false
-            });
-            $("#post-link").text(articlelink);
-            ZeroClipboard.setData( "text/plain", articlelink);
-            posted_id = aid;
-            if(logginedEmail){
-              var scope = angular.element($("#list-livewriting")).scope();
-              scope.$apply(function () {
-                scope.getList();
-              });
-            }
           });
-        })
-        .fail(function(response) {
-            console.log("time request failed");
+          $("#post-link").text(articlelink);
+          ZeroClipboard.setData( "text/plain", articlelink);
+          posted_id = aid;
+          if(logginedEmail){
+            var scope = angular.element($("#list-livewriting")).scope();
+            scope.$apply(function () {
+              scope.getList();
+            });
+          }
         });
     });
 
