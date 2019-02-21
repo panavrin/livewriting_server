@@ -12,7 +12,6 @@ app.controller('main-controller',[ '$scope', '$http', function($scope, $http) {
   $scope.isLoggedIn = false;
   $scope.error_message="";
   $scope.offset = 0;
-  $scope.numPerPage = 10;
   $scope.signin = function(){
     console.log("signin-email", $scope.signin_email);
     console.log("signin-password", $scope.signin_password);
@@ -34,7 +33,7 @@ app.controller('main-controller',[ '$scope', '$http', function($scope, $http) {
   };
 
   $scope.retrieveArticles = function(){
-    $http.post('/get-admin-articles',{offset:$scope.offset, num:$scope.numPerPage+1}, {})
+    $http.post('/get-admin-articles',{offset:$scope.offset, num:$scope.numArticlePerPage+1}, {})
     .then(function(response){
       if(response.data.length>0){
         $scope.next = false;
