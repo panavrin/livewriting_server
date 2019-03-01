@@ -12,3 +12,17 @@ public_html/js/localsetting.js
 lib/data/OKDMWHgkDCdAmA
 
 lib/config/passport.js
+
+*.wt
+
+diagnostic.data/*
+journal/*
+mongod.lock
+
+*.turtle
+
+*.lock
+
+WiredTiger
+
+*.bson
