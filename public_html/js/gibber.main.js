@@ -1,6 +1,7 @@
 
 
 $(document).ready(function () {
+    var localServerLink = localServerLink || "http://localhost:2401"
     var resetlink = localServerLink + "gibber.html";
     var demolink = resetlink + "?aid=OKDMWHgkDCdAmA";
 

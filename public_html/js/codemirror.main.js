@@ -1,5 +1,6 @@
 var app = angular.module('livewriting-app', []);
 var logginedEmail = null;
+var localServerLink = localServerLink || "http://localhost:2401"
 var resetlink = localServerLink;
 var aboutlink = resetlink + "?aid=aboutechobin";
 var posted_id = null;

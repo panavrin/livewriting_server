@@ -1,6 +1,7 @@
 /*jslint browser: true*/
 /*global $, jQuery, alert*/
 $(document).ready(function () {
+    var localServerLink = localServerLink || "http://localhost:2401"
     var resetlink = localServerLink + "textarea.html";
     var aboutlink = resetlink + "?aid=aboutechobin";
     var textarea_obj = $("#livetext");

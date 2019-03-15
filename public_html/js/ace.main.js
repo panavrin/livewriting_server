@@ -1,7 +1,8 @@
 
 
 $(document).ready(function () {
-   var resetlink = localServerLink + "index_ace.html";
+    var localServerLink = localServerLink || "http://localhost:2401"
+   var resetlink = localServerLink + "/index_ace.html";
    var aboutlink = localServerLink + "?aid=aboutechobin";
 
 

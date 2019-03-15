@@ -1,4 +1,4 @@
-var livewritingLink = localServerLink;
+var livewritingLink = localServerLink || "http://localhost:2401";
 var app = angular.module('livewriting-backoffice', []);
 app.controller('main-controller',[ '$scope', '$http', function($scope, $http) {
   $scope.list = [];

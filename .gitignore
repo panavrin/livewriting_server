@@ -1,6 +1,5 @@
 
 lib/data/*
-lib/config/*.*
 data/*
 node_modules/*
 *.log
@@ -10,9 +9,8 @@ public_html/js/localsetting.js
 public_html/js/localsetting.js
 
 lib/data/OKDMWHgkDCdAmA
-
-lib/config/passport.js
-
+.idea
+package-lock.json
 *.wt
 
 diagnostic.data/*
