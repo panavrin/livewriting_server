@@ -2,6 +2,8 @@
 lib/data/*
 data/*
 node_modules/*
+node_modules/mime/*
+node_modules/base64url/*
 *.log
 ./public_html/js/localsetting.js
 public_html/js/localsetting.js
