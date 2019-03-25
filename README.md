@@ -4,12 +4,13 @@
 3. Install node modules by runnining the following 
 ```
 npm install
+mkdir data
 ```
 
 # Running the local server
 
 ```
-mongod --dbpath ./
+mongod --dbpath ./data
 npm start
 ```
 
