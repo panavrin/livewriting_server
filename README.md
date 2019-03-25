@@ -1,7 +1,17 @@
-# run
-1. npm install
-2. npm start
+# Instllation
+1. Install npm. 
+2. Install Mongodb
+3. Install node modules by runnining the following 
+```
+npm install
+```
 
+# Running the local server
+
+```
+mongod --dbpath ./
+npm start
+```
 
 # livewriting
 
@@ -9,7 +19,7 @@ Live Writing, a web-based writing platform where keystrokes are recorded with ti
 
 Demo is available at http://www.echobin.com/?aid=aboutechobin
 
-Please contact snaglee@umich.edu for more detail.
+Please contact sangwonlee@vt.edu for more detail.
 
 # history
 
