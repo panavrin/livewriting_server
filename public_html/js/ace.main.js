@@ -1,7 +1,7 @@
 
 
 $(document).ready(function () {
-    var localServerLink = localServerLink || "http://localhost:2401"
+   var localServerLink = localServerLink || "http://localhost:2401"
    var resetlink = localServerLink + "/index_ace.html";
    var aboutlink = localServerLink + "?aid=aboutechobin";
 
@@ -140,7 +140,5 @@ $(document).ready(function () {
    $("#close").button().css({ width: '150px', margin:'5px'}).click(function(){
        $('#post-complete-message').bPopup().close();
    });
-
-
 
 });

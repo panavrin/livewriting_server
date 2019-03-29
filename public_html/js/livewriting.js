@@ -1012,7 +1012,9 @@ else{
         var time = convertTimeToString(it.lw_endTime);
 //        navbar.draggable(); // this line requires jquery ui
         navbar.append("<div class='livewriting_slider_wrapper'><div class = 'livewriting_slider'></div></div>");
-        navbar.append('<div class="livewriting_toolbar_wrapper"><div class="livewriting_navbar_buttons_left"><button class = "lw_toolbar_button lw_toolbar_play">pause</button><button id="lw_toolbar_beginning" class = "lw_toolbar_button">go to beginning</button><button id="lw_toolbar_end" class = "lw_toolbar_button">go to end</button></div><div class="livewriting_navbar_buttons_right"><div><span class="lw-current-time navbar_text"></span> / '+time+'&nbsp;<button id="lw_toolbar_stat" class = "lw_toolbar_button">Show Histogram</button><button id="lw_jogshuttle_toggle" class = "lw_toolbar_button">Toggle Jog Shuttle</button><button id="lw_toolbar_skip" class = "lw_toolbar_button">skip inactive parts</button><!--<button id="lw_toolbar_setting" class = "lw_toolbar_button">settings</button>--><button class = "lw_toolbar_button livewriting_speed navbar_text lw_toolbar_speed" >'+it.lw_playback+'&nbsp;X</button><div id="lw_playback_slider"></div><button class = "lw_toolbar_button " id="lw-hide-navbar">Hide</button></div></div></div>');
+        navbar.append('<div class="livewriting_toolbar_wrapper"><div class="livewriting_navbar_buttons_left"><button class = "lw_toolbar_button lw_toolbar_play">pause</button><button id="lw_toolbar_beginning" class = "lw_toolbar_button">go to beginning</button><button id="lw_toolbar_end" class = "lw_toolbar_button">go to end</button></div><div class="livewriting_navbar_buttons_right"><div><span class="lw-current-time navbar_text"></span> / '+time+'&nbsp;<button id="lw_toolbar_stat" class = "lw_toolbar_button">Show Histogram</button><button id="lw_jogshuttle_toggle" class = "lw_toolbar_button">Toggle Jog Shuttle</button><button id="lw_toolbar_skip" class = "lw_toolbar_button">skip inactive parts</button><!--<button id="lw_toolbar_setting" class = "lw_toolbar_button">settings</button>--><button class = "lw_toolbar_button livewriting_speed navbar_text lw_toolbar_speed" >'+it.lw_playback+'&nbsp;X</button><div id="lw_playback_slider"></div>' +
+          // '<button class = "lw_toolbar_button " id="lw-hide-navbar">Hide</button>' +
+          '</div></div></div>');
 
         $(".livewriting_slider").append("<canvas id='livewriting_histogram' width="+canvas_histogram_width+" height="+canvas_histogram_height+"></canvas>");
         $("#lw-nav-bar-toggle").hide();
@@ -1267,6 +1269,11 @@ else{
           }
           $('.ace_editor').after("<div class = 'livewriting_navbar'><div class ='livewriting_navbar_expand'><input type=text id='lw-hidden-inputfield' style='opacity:0;'><span id ='lw-toggle-time' class='lw-current-time navbar_text' style='color:gray;'></span>&nbsp;&nbsp;<button id ='lw-toggle-play'class = 'lw_toolbar_button lw_toolbar_play'>pause</button><button id ='lw-nav-bar-toggle' class = 'lw_toolbar_button'>toggle</button></div><div class ='livewriting_navbar_inner'></div></div>");
           $('.ace_editor').after("<div id='lw-jog-shuttle'>");
+          var navbar = document.getElementsByClassName('livewriting_navbar')
+          var editor_htmlElement = document.getElementById('editor')
+          if (navbar['length']>0){
+            editor_htmlElement.style.height = '88%'
+          }
 
         }else if ( it.lw_type == "codemirror"){
           if($('.CodeMirror').length>1){
@@ -1274,6 +1281,11 @@ else{
           }
           $('.CodeMirror').after("<div class = 'livewriting_navbar'><div class ='livewriting_navbar_expand'><input type=text id='lw-hidden-inputfield' style='opacity:0;'><span id ='lw-toggle-time' class='lw-current-time navbar_text'></span>&nbsp;&nbsp;<button id = 'lw-toggle-play' class = 'lw_toolbar_button lw_toolbar_play'>pause</button><button id ='lw-nav-bar-toggle'  class = 'lw_toolbar_button'>toggle</button></div><div class ='livewriting_navbar_inner'></div></div>");
           $('.CodeMirror').after("<div id='lw-jog-shuttle'>");
+          var navbar = document.getElementsByClassName('livewriting_navbar')
+          var editor_htmlElement = document.getElementsByClassName('cm-s-default')[0]
+          if (navbar['length']>0){
+            editor_htmlElement.style.height = '88%'
+          }
         } // end of codemirror.
         $("#lw-nav-bar-toggle").button({text: false,
           icons: {
@@ -1288,7 +1300,8 @@ else{
         $('.livewriting_navbar').draggable({
           stop: function( event, ui ) {
             $('.livewriting_navbar').css("height", "");
-          }
+          },
+          cancel: 'div'
         });
         $('.livewriting_navbar').css("height", "");
         var slider  = $('.livewriting_slider').slider({

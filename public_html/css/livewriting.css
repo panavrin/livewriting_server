@@ -8,11 +8,10 @@
   opacity:0.5;
 /*  display: table;*/
   position: absolute;;
-  bottom: 40px;
-  width: 90%;
-  right: 5%;
+  bottom: 0;
+  width: 100%;
+  right: 0;
   background: black;
-  border-radius: 15px;
   opacity: 1;
   z-index:100000;
 }
@@ -87,7 +86,7 @@ div.livewriting_slider{
   display:none;
   position:absolute;
   right:20px;
-  top:-25px;
+  top:-100px;
   z-index:2;
 }
 
@@ -107,14 +106,15 @@ div.livewriting_slider_wrapper{
 #lw-jog-shuttle{
   position:absolute;
   width:100px;
-  top:50%;
-  right:20px;
+  top:60%;
+  right:5%;
+  bottom: 40%;
 }
 
 .livewriting_navbar_expand{
   position:absolute;
   bottom:-20px;
-  right:-20px;
+  right:0;
   opacity: 0.5;
 }
 
