@@ -11,6 +11,7 @@
         <script src="./js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
 
         <script src="./js/jquery-1.11.1.min.js" type="text/javascript"></script>
+        <script src="js/html2canvas.min.js" type="text/javascript"></script>
         <script src="./js/jquery-ui.min.js" type="text/javascript"></script>
         <script src="./js/nipplejs.min.js" type="text/javascript"></script>
 
@@ -59,6 +60,26 @@
                 <button id = "close" >Close</button>
             </div>
     </div>
+    <div id="embed_modal" class="hidden dialog-message" style="left: 0; width: 80%">
+      <div style="text-align: center">
+        <h4>Embed</h4>
+      </div>
+      <div style="display: flex">
+        <div style="width: 50%">
+          <div id="backImage" style="width: 100%; max-height: 315px; overflow: hidden"></div>
+        </div>
+        <div style="width: 50%">
+          <div id="post-embed" class="linkbox" style="text-align: left;float: right; max-height: 315px"></div>
+          <div style="text-align: left; margin-left: 7%;margin-top: 150px">
+            <p><b>Width:</b> <button id="width_plus">+</button>&nbsp;<button id="width_minus">-</button></p>
+            <p><b>Height:</b> <button id="height_plus">+</button>&nbsp;<button id="height_minus">-</button></p>
+          </div>
+        </div>
+      </div>
+      <div class = "buttons">
+        <button id="close_embed">Close</button>
+      </div>
+    </div>
     <div id="slider" class="slider">
         <div id="side-tabs">
             <a id="trigger" class="support">&lt;</a>
@@ -77,5 +98,7 @@
     <div class="centre">
       <div id="editor"></div>
     </div>
+
+
     </body>
 </html>

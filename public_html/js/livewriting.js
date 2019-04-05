@@ -1012,7 +1012,7 @@ else{
         var time = convertTimeToString(it.lw_endTime);
 //        navbar.draggable(); // this line requires jquery ui
         navbar.append("<div class='livewriting_slider_wrapper'><div class = 'livewriting_slider'></div></div>");
-        navbar.append('<div class="livewriting_toolbar_wrapper"><div class="livewriting_navbar_buttons_left"><button class = "lw_toolbar_button lw_toolbar_play">pause</button><button id="lw_toolbar_beginning" class = "lw_toolbar_button">go to beginning</button><button id="lw_toolbar_end" class = "lw_toolbar_button">go to end</button></div><div class="livewriting_navbar_buttons_right"><div><span class="lw-current-time navbar_text"></span> / '+time+'&nbsp;<button id="lw_toolbar_stat" class = "lw_toolbar_button">Show Histogram</button><button id="lw_jogshuttle_toggle" class = "lw_toolbar_button">Toggle Jog Shuttle</button><button id="lw_toolbar_skip" class = "lw_toolbar_button">skip inactive parts</button><!--<button id="lw_toolbar_setting" class = "lw_toolbar_button">settings</button>--><button class = "lw_toolbar_button livewriting_speed navbar_text lw_toolbar_speed" >'+it.lw_playback+'&nbsp;X</button><div id="lw_playback_slider"></div>' +
+        navbar.append('<div class="livewriting_toolbar_wrapper"><div class="livewriting_navbar_buttons_left"><button class = "lw_toolbar_button lw_toolbar_play">pause</button><button id="lw_toolbar_beginning" class = "lw_toolbar_button">go to beginning</button><button id="lw_toolbar_end" class = "lw_toolbar_button">go to end</button></div><div class="livewriting_navbar_buttons_right"><div><span class="lw-current-time navbar_text"></span> / '+time+'&nbsp;<button id="lw_toolbar_share" class="lw_toolbar_button">Embed</button><button id="lw_toolbar_stat" class = "lw_toolbar_button">Show Histogram</button><button id="lw_jogshuttle_toggle" class = "lw_toolbar_button">Toggle Jog Shuttle</button><button id="lw_toolbar_skip" class = "lw_toolbar_button">skip inactive parts</button><!--<button id="lw_toolbar_setting" class = "lw_toolbar_button">settings</button>--><button class = "lw_toolbar_button livewriting_speed navbar_text lw_toolbar_speed" >'+it.lw_playback+'&nbsp;X</button><div id="lw_playback_slider"></div>' +
           // '<button class = "lw_toolbar_button " id="lw-hide-navbar">Hide</button>' +
           '</div></div></div>');
 
@@ -1154,6 +1154,64 @@ else{
           $("#lw_toolbar_stat .ui-button-text").toggleClass("ui-button-text-toggle");
           $("#livewriting_histogram").toggle();
           $("div.livewriting_slider_wrapper").toggleClass("histogram_slider_wrapper");
+        });
+
+        var frame_width=1170;
+        var frame_height=600;
+        var frame
+        var link = window.location.href
+
+        $('#width_plus').click(function() {
+          frame_width++
+          frame = `<iframe width="${frame_width}" height="${frame_height}"  src="${link}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+          $("#post-embed").text(frame);
+        })
+        $('#width_minus').click(function() {
+          frame_width<1||frame_width--
+          frame = `<iframe width="${frame_width}" height="${frame_height}"  src="${link}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+          $("#post-embed").text(frame);
+        })
+        $('#height_plus').click(function() {
+          frame_height++
+          frame = `<iframe width="${frame_width}" height="${frame_height}"  src="${link}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+          $("#post-embed").text(frame);
+        })
+        $('#height_minus').click(function() {
+          frame_height<1||frame_height--
+          frame = `<iframe width="${frame_width}" height="${frame_height}"  src="${link}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+          $("#post-embed").text(frame);
+        })
+
+        frame = `<iframe width="${frame_width}" height="${frame_height}"  src="${link}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+
+        $("#lw_toolbar_share").button({
+          text:false,
+          icons:{
+            primary:"ui-icon-link"
+          }
+        }).click(function(e){
+          $('#embed_modal').bPopup({
+            modalClose: false,
+            opacity: 0.7,
+            positionStyle: 'absolute',
+            escClose :false
+          });
+          $("#post-embed").text(frame);
+          if (document.querySelector("#editor")) {
+            html2canvas(document.querySelector("#editor")).then(canvas => {
+              document.querySelector("#backImage").appendChild(canvas)
+            });
+          }
+          if (document.querySelector(".CodeMirror")) {
+            html2canvas(document.querySelector(".CodeMirror")).then(canvas => {
+              document.querySelector("#backImage").appendChild(canvas)
+            });
+          }
+          });
+
+        $("#close_embed").button().css({ width: '150px', margin:'5px'}).click(function(){
+          $('#embed_modal').bPopup().close();
+          document.querySelector("#backImage").innerHTML = ""
         });
 
         $("#lw_toolbar_skip").button({
