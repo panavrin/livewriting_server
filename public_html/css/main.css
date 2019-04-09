@@ -161,6 +161,11 @@ box-shadow: 3px 0 6px 3px gray;
     padding:10px;
 }
 
+#embed_modal{
+    top:20px !important;
+    width: 80%!important;
+}
+
 .dialog-message{
     font-family: Courier New;
     width:50%;
