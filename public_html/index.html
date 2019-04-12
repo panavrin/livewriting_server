@@ -2,6 +2,7 @@
     <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="google-signin-client_id" content="506339667731-bjsf263j0ekil28k4fk1ag2maa8s6jr5.apps.googleusercontent.com">
         <link rel="stylesheet" href="./codemirror/lib/codemirror.css">
         <link rel=stylesheet href="./codemirror/doc/docs.css">
         <link rel="stylesheet" href="./codemirror/addon/scroll/simplescrollbars.css">
@@ -12,6 +13,14 @@
         <link rel="stylesheet" type="text/css" href="./css/jquery-ui.min.css"/>
         <link rel="stylesheet" type="text/css" href="./css/livewriting.css"/>
         <link rel="stylesheet" type="text/css" href="./css/main.css"/>
+
+
+
+        <script defer src="http://connect.facebook.net/en_US/all.js"></script>
+        <script src="https://apis.google.com/js/platform.js"  async defer></script>
+
+
+
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
         <script src="./codemirror/lib/codemirror.js"></script>
         <script src="./codemirror/mode/javascript/javascript.js"></script>
@@ -189,7 +198,12 @@
         <div id = "login-failed-message" class = "red"></div>
         <br>
         <button type="submit" id = "submit-signin" class="btn btn-default btn-md">Sign In</button>
+          <br>
+          <div class="g-signin2" id="my-signin2"></div>
+          <fb:login-button scope="public_profile,email" onlogin="checkLoginState()">
+          </fb:login-button>
         <hr>
+
         <p>Need an account? <button id="signup2">Sign up</button></p>
       </div>
 

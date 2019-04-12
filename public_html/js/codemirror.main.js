@@ -208,6 +208,16 @@ $(document).ready(function () {
         success:function(data, textStatus, jqXHR){
           $(".authform").addClass("lw_hidden");
           $(".signin").removeClass("lw_hidden");
+
+                var cookies = document.cookie.split(";");
+
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i];
+                    var eqPos = cookie.indexOf("=");
+                    var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                    document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                }
+            googlesignOut()
         },
         error:function( jqXHR, textStatus, errorThrown ){
           console.log(" error ",jqXHR, textStatus, errorThrown);
@@ -241,95 +251,129 @@ $(document).ready(function () {
       });
     }
 
-    var signupHandler = function(){
-      var email = $("#signup-email").val();
-      if(ValidateEmail(email, true)){
-        var password1 = $("#signup-pass1").val();
-        var password2 = $("#signup-pass2").val();
-        if (password1 == password2){
-          $("#signup-pass1").val("");
-          $("#signup-pass2").val("");
-
-          $.ajax({
-            url:"/signup",
-            data:{
-              email:email,
-              password:password1
-            },
-            type:"post",
-            success:function(data, textStatus, jqXHR){
-              if(data == "signup-failed"){
-                $("#signup-failed-message").text("The email address already exists.")
-              }
-              else if (ValidateEmail(data)){
-                $(".authform").addClass("lw_hidden");
-                $(".loggedin").removeClass("lw_hidden");
-                $(".signed-email").text(data);
-                if(posted_id != null){
-                  updateEmailforArticle(posted_id, data);
+    var signupHandler = function(registdata){
+        if (registdata) {
+            $.ajax({
+                url:"/signup",
+                data:registdata,
+                type:"post",
+                success:function(data, textStatus, jqXHR){
+                    if(data == "signup-failed"){
+                        $("#signup-failed-message").text("The email address already exists.")
+                    }
+                    else if (ValidateEmail(data)){
+                        $(".authform").addClass("lw_hidden");
+                        $(".loggedin").removeClass("lw_hidden");
+                        $(".signed-email").text(data);
+                        if(posted_id != null){
+                            updateEmailforArticle(posted_id, data);
+                        }
+                    }
+                    else{
+                        alert(textStatus);
+                    }
+                },
+                error:function( jqXHR, textStatus, errorThrown ){
+                    console.log(" error ",jqXHR, textStatus, errorThrown);
                 }
-              }
-              else{
-                alert(textStatus);
-              }
-            },
-            error:function( jqXHR, textStatus, errorThrown ){
-              console.log(" error ",jqXHR, textStatus, errorThrown);
-            }
-          });
+            });
         }
         else{
-          alert("Password do not match.");
+            var email = $("#signup-email").val();
+            if(ValidateEmail(email, true)){
+                var password1 = $("#signup-pass1").val();
+                var password2 = $("#signup-pass2").val();
+                if (password1 == password2){
+                    $("#signup-pass1").val("");
+                    $("#signup-pass2").val("");
+
+                    $.ajax({
+                        url:"/signup",
+                        data:{
+                            email:email,
+                            password:password1
+                        },
+                        type:"post",
+                        success:function(data, textStatus, jqXHR){
+                            if(data == "signup-failed"){
+                                $("#signup-failed-message").text("The email address already exists.")
+                            }
+                            else if (ValidateEmail(data)){
+                                $(".authform").addClass("lw_hidden");
+                                $(".loggedin").removeClass("lw_hidden");
+                                $(".signed-email").text(data);
+                                if(posted_id != null){
+                                    updateEmailforArticle(posted_id, data);
+                                }
+                            }
+                            else{
+                                alert(textStatus);
+                            }
+                        },
+                        error:function( jqXHR, textStatus, errorThrown ){
+                            console.log(" error ",jqXHR, textStatus, errorThrown);
+                        }
+                    });
+                }
+                else{
+                    alert("Password do not match.");
+                }
+            }
         }
-      }
     };
 
-    var signinHandler = function(){
-      var email = $("#signin-email").val();
-      if(ValidateEmail(email)){
-        var password = $("#signin-pass").val();
-        $("#signin-pass").val("");
-        $.ajax({
-          url:"/login",
-          data:{
-            email:email,
-            password: password
-          },
-          type:"post",
-          complete: function(){
-            console.log(" complete ");
-          },
-          success:function(data, textStatus, jqXHR){
-            console.log(" success",data, textStatus, jqXHR);
-            if(ValidateEmail(data)){
-              $(".authform").addClass("lw_hidden");
-              $(".loggedin").removeClass("lw_hidden");
-              $(".signed-email").text(data);
-              logginedEmail = data;
-              var scope = angular.element($("#list-livewriting")).scope();
-              scope.$apply(function () {
-                scope.getList();
-              });
+    var signinHandler = function(logindata){
+        var email
+        var password
+        if (logindata) {
+            email = logindata.email;
+            password = logindata.password
+        }
+        else{
+           email = $("#signin-email").val();
+           password = $("#signin-pass").val();
+        }
 
-              if(posted_id != null){
-                updateEmailforArticle(posted_id, data);
-              }
-            }
-            else if (data == "login-failed"){
-              $("#login-failed-message").text("Login Failed.")
-            }
-            else{
-              alert(textStatus);
-            }
+            if(ValidateEmail(email)){
+                $("#signin-pass").val("");
+                $.ajax({
+                    url:"/login",
+                    data:{
+                        email:email,
+                        password: password
+                    },
+                    type:"post",
+                    complete: function(){
+                    },
+                    success:function(data, textStatus, jqXHR){
+                        if(ValidateEmail(data)){
+                            $(".authform").addClass("lw_hidden");
+                            $(".loggedin").removeClass("lw_hidden");
+                            $(".signed-email").text(data);
+                            logginedEmail = data;
+                            var scope = angular.element($("#list-livewriting")).scope();
+                            scope.$apply(function () {
+                                scope.getList();
+                            });
+
+                            if(posted_id != null){
+                                updateEmailforArticle(posted_id, data);
+                            }
+                        }
+                        else if (data == "login-failed"){
+                            $("#login-failed-message").text("Login Failed.")
+                        }
+                        else{
+                            alert(textStatus);
+                        }
 
 
-          },
-          error:function( jqXHR, textStatus, errorThrown ){
-            console.log(" error ",jqXHR, textStatus, errorThrown);
-          }
-        });
-      }
-
+                    },
+                    error:function( jqXHR, textStatus, errorThrown ){
+                        console.log(" error ",jqXHR, textStatus, errorThrown);
+                    }
+                });
+        }
     };
 
     $("#submit-signin").click(signinHandler);
@@ -351,7 +395,6 @@ $(document).ready(function () {
       url:"/profile",
       type:"get",
       success:function(data, textStatus, jqXHR){
-        console.log("profile:",data);
         if(ValidateEmail(data)){
           $(".authform").addClass("lw_hidden");
           $(".not-loggedin").addClass("lw_hidden");
@@ -492,6 +535,111 @@ $(document).ready(function () {
     $("#close").button().css({ width: '150px', margin:'5px'}).click(function(){
         $('#post-complete-message').bPopup().close();
     });
+
+
+
+    // facebook singIn start
+
+    function statusChangeCallback(response) {
+        console.log(response);
+        if (response.status === 'connected') {
+           console.log('connected')
+            testAPI();
+        } else {
+            // The person is not logged into your app or we are unable to tell.
+            console.log('Please log into this app.')
+        }
+    }
+
+    checkLoginState = function() {
+        FB.getLoginStatus(function(response) {
+            if (document.cookie !== ""){
+                statusChangeCallback(response);
+            }
+        });
+    }
+
+    window.fbAsyncInit = function() {
+        FB.init({
+            appId: '2255741014677103',
+            xfbml: true,
+            cookie: true,
+            version: 'v3.2'
+        });
+
+
+        FB.getLoginStatus(function(response) {
+            if(document.cookie !== ""){
+                statusChangeCallback(response);
+            }
+        });
+
+    };
+
+    (function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
+        js.src = "https://connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+
+
+    function testAPI() {
+        console.log('Welcome!  Fetching your information.... ');
+        FB.api('/me',{fields: 'email'}, function(response) {
+            var responseData = {
+                email:response.email,
+                password: response.id
+            }
+            signupHandler(responseData)
+            signinHandler(responseData)
+        });
+    }
+    // facbook singin end
+
+
+
+
+    // google singIn start
+
+
+    function onSuccess(googleUser) {
+        var profile = googleUser.getBasicProfile();
+        var responseData = {
+            email: profile.getEmail(),
+            password: profile.getId()
+        }
+        signupHandler(responseData)
+        signinHandler(responseData)
+
+    }
+    function onFailure(error) {
+        console.log(error);
+    }
+
+
+    $(window).load((function () {
+        renderButton()
+    }))
+
+    function renderButton(){
+        gapi.signin2.render('my-signin2', {
+            'scope': 'profile email',
+            'onsuccess': onSuccess,
+            'onfailure': onFailure
+        });
+    }
+
+
+    function googlesignOut() {
+        var auth2 = gapi.auth2.getAuthInstance();
+        auth2.signOut().then(function () {
+            console.log('User signed out.');
+        });
+    }
+
+    // google singIn
 
 
 
