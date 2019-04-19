@@ -8,6 +8,21 @@
         <link rel="stylesheet" type="text/css" href="./css/livewriting.css"/>
         <link rel="stylesheet" type="text/css" href="./css/main.css"/>
 
+
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="shortcut icon" href="#">
+
+
+
+        <!--        <script defer src="http://connect.facebook.net/en_US/all.js"></script>-->
+<!--        <script src="https://apis.google.com/js/platform.js"  async defer></script>-->
+        <script src="https://cdn.rawgit.com/oauth-io/oauth-js/c5af4519/dist/oauth.js"></script>
+
+
+
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+
         <script src="./js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
 
         <script src="./js/jquery-1.11.1.min.js" type="text/javascript"></script>
@@ -21,79 +36,222 @@
         <script src="./js/autogrow.min.js" type="text/javascript"></script>
         <script src="./js/livewriting.js" type="text/javascript"></script>
         <script src="./js/localsetting.js" type="text/javascript"></script>
-        <script src="./js/ace.main.js" type="text/javascript"></script>
+            <script src="./js/ace.main.js" type="text/javascript"></script>
 
          <title>Live Writing</title>
         </head>
-    <body class="app-body">
+    <body ng-app = "livewriting-app"  class="app-body">
 
-    <div id="initial-message" class="hidden dialog-message" >
+    <div id="initial-message" class="dialog-message" style = "display:none;" >
         <div>
             <h4>Live Writing</h4>
             <p>Record what you write and playback your writing. Press <strong>Start</strong> when ready to live-write.</p>
             <div class = "buttons">
                 <button id = "start">Start</button>
                 <button id = "about1" class = "about">About</button>
+                <button id = "signin3" class = "not-loggedin">Sign In</button>
             </div>
-            <div style="text-align:left; font-size:10px; font-family:sans-serif;">
-              <input type="checkbox" id="livewriting_consent" checked> Help us improve Live Writing. Anonymous writing logs will be collected for a research purpose.
-              <a href="http://echobin.com/research_content.html" target=_blank>Learn More.</a>
+            <div class = "loggedin lw_hidden buttons">Signed in as <span class="signed-email"></span>
+                <button class = "yourwriting ">Your LiveWriting</button>
+            </div>
+
+            <div style="text-align:left; font-size:12px; font-family:sans-serif;">
+                <input type="checkbox" id="livewriting_consent" checked> Help us improve Live Writing. Anonymous writing logs will be collected for a research purpose.
+                <a href="http://echobin.com/research_content.html" target=_blank>Learn More.</a>
             </div>
         </div>
     </div>
 
-    <div id="post-message" class="hidden dialog-message" align=center>
-            <h4>Posting...</h4>
-            <p><img src="images/progressbar.gif" ></p>
+    <div id="post-message" class="lw_hidden dialog-message" align=center>
+        <h4>Posting...</h4>
+        <p><img src="images/progressbar.gif" ></p>
     </div>
-    <div id="download-message" class="hidden dialog-message" align=center>
-            <h4>Downloading...</h4>
-            <p><img src="images/progressbar.gif" ></p>
-    </div>
-    <div id="post-complete-message" class="hidden dialog-message" align=center>
-            <h4>Posting complete.</h4>
-            <p>You can access to your writing with the following address. </p>
-            <div id="post-link" class="linkbox">www.dummylink.com/doesnotexist</div>
-            <div class = "buttons">
-                <button id = "copytoclipboard">Copy to clipboard</button>
-                <button id = "play" >Play</button>
-                <button id = "close" >Close</button>
+
+    <div id="list-livewriting" ng-controller = "my-livewriting-list" class="lw_hidden dialog-message" align=center>
+        <h4 ng-show = "list.length == 0">You do not have any livewriting yet.</h4>
+        <h4 ng-show = "error">There was an error in downloading the list. Check your connection.</h4>
+        <div ng-show = "list.length > 0">
+            <h4 >Your articles. <br><br></h4>
+            <div ng-repeat = "article in list" class = "row" style = "margin: 10px;">
+                <div class = "col-md-2 col-lg-2 col-sm-2">
+                </div>
+
+                <div class = "col-md-3 col-lg-3 col-sm-3">
+                    <a ng-href="{{link+article._id}}">
+                        <button class = "btn btn-success btn-sm">Open</button>
+                    </a>
+                    <!--  <button class = "btn btn-warning btn-sm" ng-click="alert('share');">Share</button>-->
+                </div>
+                <div class = "col-md-7 col-lg-7 col-sm-7">
+                    <button class = "btn btn-default btn-sm" >{{timeToDate(article.servertime, article.useroptions.servertime)}}</button>
+                </div>
             </div>
-    </div>
-    <div id="embed_modal" class="hidden dialog-message" style="left: 0; width: 80%">
-      <div style="text-align: center">
-        <h4>Embed</h4>
-      </div>
-      <div style="display: flex">
-        <div style="width: 50%">
-          <div id="backImage" style="width: 100%; max-height: 315px; overflow: hidden"></div>
+            <div>
+                <br>
+                <button class="navigate" ng-show = "offset > 0" ng-click="prevList()" >&lt;&lt;</button>
+                <button class="navigate" ng-show = "next > 0" ng-click="nextList()" >&gt;&gt;</button>
+                <br>
+            </div>
         </div>
-        <div style="width: 50%">
-          <div id="post-embed" class="linkbox" style="text-align: left;float: right; max-height: 315px"></div>
-          <div style="text-align: left; margin-left: 7%;margin-top: 150px">
-            <p><b>Width:</b> <button id="width_plus">+</button>&nbsp;<button id="width_minus">-</button></p>
-            <p><b>Height:</b> <button id="height_plus">+</button>&nbsp;<button id="height_minus">-</button></p>
-          </div>
+        <div>
+            <br>
+            <button class = "list-livewriting-close" >Close</button>
+            <br>
         </div>
-      </div>
-      <div class = "buttons">
-        <button id="close_embed">Close</button>
-      </div>
+
     </div>
+
+    <div id="download-message" class="lw_hidden dialog-message" align=center>
+        <h4>Downloading...</h4>
+        <p><img src="images/progressbar.gif" ></p>
+    </div>
+    <div id="post-complete-message" ng-controller = "posting-dialog" class="lw_hidden dialog-message" align=center>
+        <h4>Posting complete.</h4>
+        <p>You can access to your writing with the following address. </p>
+        <div id="post-link" class="linkbox">www.dummylink.com/doesnotexist</div>
+        <div class = "buttons">
+            <button id = "copytoclipboard">Copy to clipboard</button>
+            <button id = "play" >Play</button>
+            <button id = "close">Close</button>
+        </div>
+        <div ng-hide = "isLoggedIn()">
+            <br>
+            Sign in or sign up to save your livewirting.
+            <br>
+            <div>
+                <button class = "post-button" ng-click = "openSignin()">Sign In</button>
+                <button class = "post-button" ng-click = "openSignup()">Sign Up</button>
+            </div>
+        </div>
+
+        <div ng-show = "isLoggedIn()">
+            Access your articles here.
+            <button class = "yourwriting">Your LiveWriting</button>
+        </div>
+    </div>
+
+
+    <div id="embed_modal" ng-controller="posting-dialog" class="lw_hidden dialog-message" align=center>
+        <div style="text-align: center">
+            <h4>Embed</h4>
+        </div>
+        <div style="display: flex">
+
+            <div style="width: 50%">
+                <div id="backImage" style="width: 100%; max-height: 315px; overflow: hidden"></div>
+            </div>
+            <div style="width: 50%">
+                <div id="post-embed" class="linkbox" style="text-align: left;float: right; max-height: 315px"></div>
+                <div style="text-align: right;float: right;width: 100%;padding: 10px 50px;">
+                    <p style="text-align: left"><b>Width:</b> <button id="width_plus">+</button>&nbsp;<button id="width_minus">-</button></p>
+                    <p style="text-align: left"><b>Height:</b> <button id="height_plus">+</button>&nbsp;<button id="height_minus">-</button></p>
+                </div>
+            </div>
+        </div>
+        <div class = "buttons">
+            <button id="close_embed">Close</button>
+        </div>
+    </div>
+
+
+
     <div id="slider" class="slider">
         <div id="side-tabs">
-            <a id="trigger" class="support">&lt;</a>
+            <a id="trigger" class="support" style="color:black; font-weight:bold; cursor: pointer; text-decoration: none">&lt;</a>
         </div>
-    <div>
-    <h2>Live Writing</h2>
-    <button id = "postdata" class = "hidden">Post</button> </div>
-    <div><button id = "reset" class = "hidden">Start Over</button> </div>
-    <div><button id = "about2" class = "about">About</button> </div>
-            <div class = "bottom">
-                <p>v.0.1.0</p>
-                <p> last updated 9/17/2015</p>
-                <p>© 2014-2015 <a href="http://sangwonlee.com">Sang Won Lee</a>. </p>
+        <h2>Live Writing</h2>
+        <div><button id = "postdata" class = "">Post</button> </div>
+        <div><button id = "reset" class = "">Start Over</button> </div>
+        <div><button id = "about2" class = "about">About</button> </div>
+        <div class = "auth authform">
+            <div>Login or Register with:</div>
+            <button id="signin">Sign In</button>
+            <button id="signup">Sign Up</button>
+        </div>
+
+        <div class = "loggedin authform lw_hidden">
+            <div>Signed in as <span class="signed-email"></span></div>
+            <div>
+                <br>
+                <button id="signout">Sign out</button>
+                <br><br>
+                <button class = "yourwriting">Your LiveWriting</button>
+
             </div>
+        </div>
+
+        <div class = "signin authform lw_hidden">
+            <div class="form-group" style="margin: 0">
+                <label>Email</label>
+                <input type="text" id = "signin-email" class="form-control" name="email">
+            </div>
+            <div class="form-group" style="margin: 0">
+                <label>Password</label>
+                <input type="password" id = "signin-pass" class="form-control" name="password">
+            </div>
+            <br>
+            <div id = "login-failed-message" class = "red"></div>
+            <br>
+            <button type="submit" id = "submit-signin" class="btn btn-default btn-md">Sign In</button>
+            <br>
+
+
+<!--            <div class="social" style="display: flex">-->
+<!--                <div class="g-signin2" id="my-signin2" style="width: 39px; height: 39px; overflow: hidden; margin: 5px 5px; border-radius: 5px"></div>-->
+<!--                <div class="btn btn-block btn-social btn-facebook" id="facebook-button" style="width:39px; height:39px; overflow: hidden; margin: 5px 5px; border-radius: 5px; background-color: #3f5c9a">-->
+<!--                    <i class="fa fa-facebook" style="font-size: 22px; color: #ffffff"></i>-->
+<!--                </div>-->
+<!--                <div id="github-button" class="btn btn-block btn-social btn-github" style="width: 39px; height: 39px; overflow: hidden; margin: 5px 5px; border-radius: 5px; background-color: #fff">-->
+<!--                    <i class="fa fa-github" style="font-size: 25px"></i>-->
+<!--                </div>-->
+<!--            </div>-->
+
+
+
+
+            <div class="social" style="display: flex">
+                <a id="google-button" class="btn btn-block btn-social btn-google" style="width: 39px; height: 39px; overflow: hidden; margin: 5px 5px; border-radius: 5px; background-color: #cd0000">
+                    <i class="fa fa-google" style="font-size: 25px; color: #ffffff"></i>
+                </a>
+                <div class="btn btn-block btn-social btn-facebook" id="facebook-button" style="width:39px; height:39px; overflow: hidden; margin: 5px 5px; border-radius: 5px; background-color: #3f5c9a">
+                    <i class="fa fa-facebook" style="font-size: 25px; color: #ffffff"></i>
+                </div>
+                <div id="github-button" class="btn btn-block btn-social btn-github" style="width: 39px; height: 39px; overflow: hidden; margin: 5px 5px; border-radius: 5px; background-color: #fff">
+                    <i class="fa fa-github" style="font-size: 25px"></i>
+                </div>
+                <a id="twitter-button" class="btn btn-block btn-social btn-twitter" style="width: 39px; height: 39px; overflow: hidden; margin: 5px 5px; border-radius: 5px; background-color: #1DA1F2">
+                    <i class="fa fa-twitter" style="font-size: 25px; color: #ffffff"></i>
+                </a>
+            </div>
+            <hr style="margin: 10px">
+
+            <p>Need an account? <button id="signup2">Sign up</button></p>
+        </div>
+
+        <div class = "signup authform lw_hidden">
+            <div class="form-group" style="margin-bottom: 5px">
+                <label>Email</label>
+                <input type="text" id = "signup-email" class="form-control" name="email">
+            </div>
+            <div class="form-group" style="margin-bottom: 5px">
+                <label>Password</label>
+                <input type="password" id = "signup-pass1"  class="form-control" name="password">
+            </div>
+            <div class="form-group" style="margin-bottom: 5px">
+                <label>Repeat Password</label>
+                <input type="password" id = "signup-pass2"  class="form-control" name="password">
+            </div>
+            <div id = "signup-failed-message" class = "red"></div>
+            <button type="submit" id = "submit-signup" class="btn btn-default btn-md">Sign Up</button>
+            <hr>
+            <p>Already have an account? <button id="signin2">Sign In</button></p>
+        </div>
+
+        <div class = "bottom">
+            <p>v.0.1.0</p>
+            <p> last updated 9/17/2015</p>
+            <p>© 2014-2015 <a href="http://sangwonlee.com">Sang Won Lee</a>. </p>
+        </div>
     </div>
     <div class="centre">
       <div id="editor"></div>

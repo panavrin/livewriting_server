@@ -52,7 +52,7 @@ app.controller('my-livewriting-list',[ '$scope', '$http', function($scope, $http
   $scope.getList = function(){
     if(!ValidateEmail(logginedEmail))
       return;
-    $http.post('/getlist', {offset:$scope.offset, num:$scope.numArticlePerPage+1}, {})
+    $http.post('/getlist', {offset:$scope.offset, num:$scope.numArticlePerPage+1,editor_type:"codemirror"}, {})
     .then(function(response){
       if(response.data.length>0){
         $scope.next = false;
@@ -209,15 +209,24 @@ $(document).ready(function () {
           $(".authform").addClass("lw_hidden");
           $(".signin").removeClass("lw_hidden");
 
-                var cookies = document.cookie.split(";");
-
+            var cookies = document.cookie.split(";");
                 for (var i = 0; i < cookies.length; i++) {
                     var cookie = cookies[i];
                     var eqPos = cookie.indexOf("=");
                     var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
                     document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
                 }
-            googlesignOut()
+            var scope = angular.element($("#list-livewriting")).scope();
+            var popup_scope = angular.element($("#post-complete-message")).scope();
+            scope.$apply(function () {
+                scope.list = [];
+                scope.totallist = []
+            });
+            posted_id = null
+            logginedEmail = null;
+
+            // popup_scope.isLoggedIn()
+
         },
         error:function( jqXHR, textStatus, errorThrown ){
           console.log(" error ",jqXHR, textStatus, errorThrown);
@@ -239,7 +248,6 @@ $(document).ready(function () {
         },
         type:"post",
         success:function(data, textStatus, jqXHR){
-          console.log("posted_id email logged:(",posted_id,",",data,")");
           var scope = angular.element($("#list-livewriting")).scope();
           scope.$apply(function () {
             scope.getList();
@@ -249,6 +257,22 @@ $(document).ready(function () {
           console.error(data);
         }
       });
+    }
+
+    var getUser = function (userData) {
+        $.ajax({
+            url:"/getuser",
+            data:userData,
+            type:"post",
+            success:function(data, textStatus, jqXHR){
+                if (data==''){
+                    signupHandler(userData)
+                    signinHandler(userData)
+                } else{
+                    signinHandler(userData)
+                }
+            }
+        });
     }
 
     var signupHandler = function(registdata){
@@ -349,6 +373,7 @@ $(document).ready(function () {
                         if(ValidateEmail(data)){
                             $(".authform").addClass("lw_hidden");
                             $(".loggedin").removeClass("lw_hidden");
+                            $("#login-failed-message").text("");
                             $(".signed-email").text(data);
                             logginedEmail = data;
                             var scope = angular.element($("#list-livewriting")).scope();
@@ -376,8 +401,12 @@ $(document).ready(function () {
         }
     };
 
-    $("#submit-signin").click(signinHandler);
-    $("#submit-signup").click(signupHandler);
+    $("#submit-signin").click(function (){
+        signinHandler()
+    });
+    $("#submit-signup").click(function (){
+        signupHandler()
+    });
 
     $("#signin-pass").keyup(function(ev){
       if (ev.which == 13){
@@ -452,12 +481,11 @@ $(document).ready(function () {
           $("#post-link").text(articlelink);
           ZeroClipboard.setData( "text/plain", articlelink);
           posted_id = aid;
-          if(logginedEmail){
+
             var scope = angular.element($("#list-livewriting")).scope();
             scope.$apply(function () {
               scope.getList();
             });
-          }
         });
     });
 
@@ -501,16 +529,13 @@ $(document).ready(function () {
         //console.log(obj);
         },
         shown: function(obj){
-          //  console.log(obj);
             $("#trigger").html('&gt;');
             obj.toggleClass(".left-shadow-overlay");
             obj.css({opacity:'0.9'});
         },
         hide: function(obj){
-          //  console.log(obj);
         },
         hidden: function(obj){
-            //console.log(obj);
             $("#trigger").html('&lt;');
             obj.toggleClass(".left-shadow-overlay");
             editor.focus();
@@ -538,108 +563,273 @@ $(document).ready(function () {
 
 
 
-    // facebook singIn start
+    // facebook signin start
 
-    function statusChangeCallback(response) {
-        console.log(response);
-        if (response.status === 'connected') {
-           console.log('connected')
-            testAPI();
-        } else {
-            // The person is not logged into your app or we are unable to tell.
-            console.log('Please log into this app.')
-        }
-    }
+    $('#facebook-button').on('click', function() {
+        // Initialize with your OAuth.io app public key
+        OAuth.initialize('HwAr2OtSxRgEEnO2-JnYjsuA3tc');
+        // Use popup for oauth
+        // Alternative is redirect
+        OAuth.popup('facebook').then(facebook => {
 
-    checkLoginState = function() {
-        FB.getLoginStatus(function(response) {
-            if (document.cookie !== ""){
-                statusChangeCallback(response);
-            }
+            // Retrieves user data from oauth provider
+            // Prompts 'welcome' message with User's email on successful login
+            // #me() is a convenient method to retrieve user data without requiring you
+            // to know which OAuth provider url to call
+            facebook.me().then(data => {
+                var loginData = {
+                    email:data.email,
+                    password:"secretKey",
+                }
+                getUser(loginData)
+            });
+            // Retrieves user data from OAuth provider by using #get() and
+            // OAuth provider url
         });
-    }
+    })
+    // facbook signin end
 
-    window.fbAsyncInit = function() {
-        FB.init({
-            appId: '2255741014677103',
-            xfbml: true,
-            cookie: true,
-            version: 'v3.2'
+
+
+
+    // google signin start
+
+
+    $('#google-button').on('click', function() {
+        // Initialize with your OAuth.io app public key
+        OAuth.initialize('HwAr2OtSxRgEEnO2-JnYjsuA3tc');
+        // Use popup for oauth
+        // Alternative is redirect
+        OAuth.popup('google').then(google => {
+
+            // Retrieves user data from oauth provider
+            // Prompts 'welcome' message with User's email on successful login
+            // #me() is a convenient method to retrieve user data without requiring you
+            // to know which OAuth provider url to call
+            google.me().then(data => {
+                var loginData = {
+                    email:data.email,
+                    password:"secretKey",
+                }
+                getUser(loginData)
+            });
+            // Retrieves user data from OAuth provider by using #get() and
+            // OAuth provider url
+
         });
+    })
 
+    // google signin end
 
-        FB.getLoginStatus(function(response) {
-            if(document.cookie !== ""){
-                statusChangeCallback(response);
-            }
+    // github singIn start
+    $('#github-button').on('click', function() {
+        // Initialize with your OAuth.io app public key
+        OAuth.initialize('HwAr2OtSxRgEEnO2-JnYjsuA3tc');
+        // Use popup for oauth
+        // Alternative is redirect
+        OAuth.popup('github').then(github => {
+
+            // Retrieves user data from oauth provider
+            // Prompts 'welcome' message with User's email on successful login
+            // #me() is a convenient method to retrieve user data without requiring you
+            // to know which OAuth provider url to call
+            github.me().then(data => {
+                var loginData = {
+                    email:data.email,
+                    password:"secretKey",
+                }
+                getUser(loginData)
+            });
+            // Retrieves user data from OAuth provider by using #get() and
+            // OAuth provider url
+
         });
-
-    };
-
-    (function(d, s, id) {
-        var js, fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) return;
-        js = d.createElement(s); js.id = id;
-        js.src = "https://connect.facebook.net/en_US/sdk.js";
-        fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
+    })
+    // github signin end
 
 
-    function testAPI() {
-        console.log('Welcome!  Fetching your information.... ');
-        FB.api('/me',{fields: 'email'}, function(response) {
-            var responseData = {
-                email:response.email,
-                password: response.id
-            }
-            signupHandler(responseData)
-            signinHandler(responseData)
+    //twitter signin start
+
+    $('#twitter-button').on('click', function() {
+        // Initialize with your OAuth.io app public key
+        OAuth.initialize('HwAr2OtSxRgEEnO2-JnYjsuA3tc');
+        // Use popup for oauth
+        // Alternative is redirect
+        OAuth.popup('twitter').then(twitter => {
+
+            // Retrieves user data from oauth provider
+            // Prompts 'welcome' message with User's email on successful login
+            // #me() is a convenient method to retrieve user data without requiring you
+            // to know which OAuth provider url to call
+            twitter.me().then(data => {
+                var loginData = {
+                    email:data.email,
+                    password:"secretKey",
+                }
+                getUser(loginData)
+            });
+            // Retrieves user data from OAuth provider by using #get() and
+            // OAuth provider url
+
         });
-    }
-    // facbook singin end
+    })
+
+    //twitter signin end
 
 
 
 
-    // google singIn start
 
 
-    function onSuccess(googleUser) {
-        var profile = googleUser.getBasicProfile();
-        var responseData = {
-            email: profile.getEmail(),
-            password: profile.getId()
-        }
-        signupHandler(responseData)
-        signinHandler(responseData)
-
-    }
-    function onFailure(error) {
-        console.log(error);
-    }
 
 
-    $(window).load((function () {
-        renderButton()
-    }))
-
-    function renderButton(){
-        gapi.signin2.render('my-signin2', {
-            'scope': 'profile email',
-            'onsuccess': onSuccess,
-            'onfailure': onFailure
-        });
-    }
 
 
-    function googlesignOut() {
-        var auth2 = gapi.auth2.getAuthInstance();
-        auth2.signOut().then(function () {
-            console.log('User signed out.');
-        });
-    }
 
-    // google singIn
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // function statusChangeCallback(response) {
+    //     console.log(response);
+    //     if (response.status === 'connected') {
+    //         console.log('connected')
+    //         testAPI();
+    //     } else {
+    //         // The person is not logged into your app or we are unable to tell.
+    //         console.log('Please log into this app.')
+    //     }
+    // }
+    //
+    // checkLoginState = function() {
+    //     FB.getLoginStatus(function(response) {
+    //         if (document.cookie !== ""){
+    //             statusChangeCallback(response);
+    //         }
+    //     });
+    // }
+    //
+    // window.fbAsyncInit = function() {
+    //     FB.init({
+    //         appId: '1504739526323404',
+    //         xfbml: true,
+    //         cookie: true,
+    //         version: 'v3.2'
+    //     });
+    //
+    //
+    //     FB.getLoginStatus(function(response) {
+    //         if(document.cookie !== ""){
+    //             statusChangeCallback(response);
+    //         }
+    //     });
+    //
+    // };
+    //
+    // (function(d, s, id) {
+    //     var js, fjs = d.getElementsByTagName(s)[0];
+    //     if (d.getElementById(id)) return;
+    //     js = d.createElement(s); js.id = id;
+    //     js.src = "https://connect.facebook.net/en_US/sdk.js";
+    //     fjs.parentNode.insertBefore(js, fjs);
+    // }(document, 'script', 'facebook-jssdk'));
+    //
+    //
+    // function testAPI() {
+    //     console.log('Welcome!  Fetching your information.... ');
+    //     FB.api('/me',{fields: 'email'}, function(response) {
+    //         console.log(response, "facebook");
+    //         var loginData = {
+    //             email:response.email,
+    //             password:"secretKey",
+    //         }
+    //         getUser(loginData)
+    //     });
+    // }
+    // // facbook singin end
+    //
+    //
+    //
+    //
+    // // google singIn start
+    //
+    //
+    // function onSuccess(googleUser) {
+    //     var profile = googleUser.getBasicProfile();
+    //     console.log(profile.getId(), "google");
+    //     var loginData = {
+    //         email:profile.getEmail(),
+    //         password:"secretKey",
+    //     }
+    //     getUser(loginData)
+    // }
+    // function onFailure(error) {
+    //     console.log(error);
+    // }
+    //
+    //
+    // $(window).load((function () {
+    //     renderButton()
+    // }))
+    //
+    // function renderButton(){
+    //     gapi.signin2.render('my-signin2', {
+    //         'scope': 'profile email',
+    //         'onsuccess': onSuccess,
+    //         'onfailure': onFailure
+    //     });
+    // }
+    //
+    //
+    // function googlesignOut() {
+    //     var auth2 = gapi.auth2.getAuthInstance();
+    //     auth2.signOut().then(function () {
+    //
+    //     });
+    // }
+    //
+    // // google singIn end
+    //
+    // // github singIn start
+    // $('#github-button').on('click', function() {
+    //     // Initialize with your OAuth.io app public key
+    //     OAuth.initialize('HwAr2OtSxRgEEnO2-JnYjsuA3tc');
+    //     // Use popup for oauth
+    //     // Alternative is redirect
+    //     OAuth.popup('github').then(github => {
+    //
+    //         // Retrieves user data from oauth provider
+    //         // Prompts 'welcome' message with User's email on successful login
+    //         // #me() is a convenient method to retrieve user data without requiring you
+    //         // to know which OAuth provider url to call
+    //         github.me().then(data => {
+    //             console.log(data.raw.user.node_id, "github");
+    //             var loginData = {
+    //                 email:data.email,
+    //                 password:"secretKey",
+    //             }
+    //             getUser(loginData)
+    //         });
+    //         // Retrieves user data from OAuth provider by using #get() and
+    //         // OAuth provider url
+    //         github.get('/user').then(data => {
+    //
+    //         })
+    //     });
+    // })
+    // // github singIn end
+
+
 
 
 

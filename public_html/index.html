@@ -8,16 +8,17 @@
         <link rel="stylesheet" href="./codemirror/addon/scroll/simplescrollbars.css">
 
         <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
-        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
         <link rel="stylesheet" type="text/css" href="./css/jquery-ui.min.css"/>
         <link rel="stylesheet" type="text/css" href="./css/livewriting.css"/>
         <link rel="stylesheet" type="text/css" href="./css/main.css"/>
+        <link rel="shortcut icon" href="#">
 
+<!--        <script defer src="http://connect.facebook.net/en_US/all.js"></script>-->
+<!--        <script src="https://apis.google.com/js/platform.js"  async defer></script>-->
 
-
-        <script defer src="http://connect.facebook.net/en_US/all.js"></script>
-        <script src="https://apis.google.com/js/platform.js"  async defer></script>
+        <script src="https://cdn.rawgit.com/oauth-io/oauth-js/c5af4519/dist/oauth.js"></script>
 
 
 
@@ -161,13 +162,12 @@
 
     <div id="slider" class="slider">
         <div id="side-tabs">
-            <a id="trigger" class="support" style="color:black; font-weight:bold;">&lt;</a>
+            <a id="trigger" class="support" style="color:black; font-weight:bold; cursor: pointer; text-decoration: none">&lt;</a>
         </div>
       <h2>Live Writing</h2>
       <div><button id = "postdata" class = "">Post</button> </div>
       <div><button id = "reset" class = "">Start Over</button> </div>
       <div><button id = "about2" class = "about">About</button> </div>
-      <br><br>
       <div class = "auth authform">
         <div>Login or Register with:</div>
           <button id="signin">Sign In</button>
@@ -186,43 +186,65 @@
       </div>
 
       <div class = "signin authform lw_hidden">
-        <div class="form-group">
+        <div class="form-group" style="margin: 0">
             <label>Email</label>
             <input type="text" id = "signin-email" class="form-control" name="email">
         </div>
-        <div class="form-group">
+        <div class="form-group" style="margin: 0">
             <label>Password</label>
             <input type="password" id = "signin-pass" class="form-control" name="password">
         </div>
-        <br>
+          <br>
         <div id = "login-failed-message" class = "red"></div>
-        <br>
+          <br>
         <button type="submit" id = "submit-signin" class="btn btn-default btn-md">Sign In</button>
           <br>
-          <div class="g-signin2" id="my-signin2"></div>
-          <fb:login-button scope="public_profile,email" onlogin="checkLoginState()">
-          </fb:login-button>
-        <hr>
+
+<!--          <div class="social" style="display: flex">-->
+<!--              <div class="g-signin2" id="my-signin2" style="width: 39px; height: 39px; overflow: hidden; margin: 5px 5px; border-radius: 5px"></div>-->
+<!--              <div class="btn btn-block btn-social btn-facebook" id="facebook-button" style="width:39px; height:39px; overflow: hidden; margin: 5px 5px; border-radius: 5px; background-color: #3f5c9a">-->
+<!--                  <i class="fa fa-facebook" style="font-size: 22px; color: #ffffff"></i>-->
+<!--              </div>-->
+<!--              <div id="github-button" class="btn btn-block btn-social btn-github" style="width: 39px; height: 39px; overflow: hidden; margin: 5px 5px; border-radius: 5px; background-color: #fff">-->
+<!--                  <i class="fa fa-github" style="font-size: 25px"></i>-->
+<!--              </div>-->
+<!--          </div>-->
+
+
+
+          <div class="social" style="display: flex">
+              <a id="google-button" class="btn btn-block btn-social btn-google" style="width: 39px; height: 39px; overflow: hidden; margin: 5px 5px; border-radius: 5px; background-color: #cd0000">
+                  <i class="fa fa-google" style="font-size: 25px; color: #ffffff"></i>
+              </a>
+              <div class="btn btn-block btn-social btn-facebook" id="facebook-button" style="width:39px; height:39px; overflow: hidden; margin: 5px 5px; border-radius: 5px; background-color: #3f5c9a">
+                  <i class="fa fa-facebook" style="font-size: 25px; color: #ffffff"></i>
+              </div>
+              <div id="github-button" class="btn btn-block btn-social btn-github" style="width: 39px; height: 39px; overflow: hidden; margin: 5px 5px; border-radius: 5px; background-color: #fff">
+                  <i class="fa fa-github" style="font-size: 25px"></i>
+              </div>
+              <a id="twitter-button" class="btn btn-block btn-social btn-twitter" style="width: 39px; height: 39px; overflow: hidden; margin: 5px 5px; border-radius: 5px; background-color: #1DA1F2">
+                  <i class="fa fa-twitter" style="font-size: 25px; color: #ffffff"></i>
+              </a>
+          </div>
+        <hr style="margin: 10px">
 
         <p>Need an account? <button id="signup2">Sign up</button></p>
       </div>
 
       <div class = "signup authform lw_hidden">
-        <div class="form-group">
+        <div class="form-group" style="margin-bottom: 5px">
             <label>Email</label>
             <input type="text" id = "signup-email" class="form-control" name="email">
         </div>
-        <div class="form-group">
+        <div class="form-group" style="margin-bottom: 5px">
           <label>Password</label>
           <input type="password" id = "signup-pass1"  class="form-control" name="password">
         </div>
-        <div class="form-group">
+        <div class="form-group" style="margin-bottom: 5px">
           <label>Repeat Password</label>
           <input type="password" id = "signup-pass2"  class="form-control" name="password">
         </div>
-        <br>
         <div id = "signup-failed-message" class = "red"></div>
-        <br>
         <button type="submit" id = "submit-signup" class="btn btn-default btn-md">Sign Up</button>
         <hr>
         <p>Already have an account? <button id="signin2">Sign In</button></p>

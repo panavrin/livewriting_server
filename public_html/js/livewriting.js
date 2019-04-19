@@ -1020,6 +1020,7 @@ else{
         $("#lw-nav-bar-toggle").hide();
         $("#lw-toggle-time").hide();
         $("#lw-toggle-play").hide();
+        $("#slider").css("display","none");
 
         $("#lw-hide-navbar").button({text: false,
           icons: {
@@ -1506,7 +1507,6 @@ else{
           var data = getActionData(it);
           data["useroptions"] = useroptions;
           // Send the request
-          console.log(JSON.stringify(data));
           $.ajax({
             url:url,
             type:"post",
