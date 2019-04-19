@@ -1314,7 +1314,7 @@ else{
             if(DEBUG) console.error("For now live writing does not support multiple editors.");
           }
           $('.ace_editor').after("<div class = 'livewriting_navbar'><div class ='livewriting_navbar_expand'><input type=text id='lw-hidden-inputfield' style='opacity:0;'><span id ='lw-toggle-time' class='lw-current-time navbar_text' style='color:gray;'></span>&nbsp;&nbsp;<button id ='lw-toggle-play'class = 'lw_toolbar_button lw_toolbar_play'>pause</button><button id ='lw-nav-bar-toggle' class = 'lw_toolbar_button'>toggle</button></div><div class ='livewriting_navbar_inner'></div></div>");
-          $('.ace_editor').after("<div id='lw-jog-shuttle'>");
+          $('.ace_editor').after("<div id='lw-jog-shuttle' style='display: none'>");
           var navbar = document.getElementsByClassName('livewriting_navbar')
           var editor_htmlElement = document.getElementById('editor')
           if (navbar['length']>0){
@@ -1326,7 +1326,7 @@ else{
             if(DEBUG) console.error("For now live writing does not support multiple editors.");
           }
           $('.CodeMirror').after("<div class = 'livewriting_navbar'><div class ='livewriting_navbar_expand'><input type=text id='lw-hidden-inputfield' style='opacity:0;'><span id ='lw-toggle-time' class='lw-current-time navbar_text'></span>&nbsp;&nbsp;<button id = 'lw-toggle-play' class = 'lw_toolbar_button lw_toolbar_play'>pause</button><button id ='lw-nav-bar-toggle'  class = 'lw_toolbar_button'>toggle</button></div><div class ='livewriting_navbar_inner'></div></div>");
-          $('.CodeMirror').after("<div id='lw-jog-shuttle'>");
+          $('.CodeMirror').after("<div id='lw-jog-shuttle' style='display: none'>");
           var navbar = document.getElementsByClassName('livewriting_navbar')
           var editor_htmlElement = document.getElementsByClassName('cm-s-default')[0]
           if (navbar['length']>0){
