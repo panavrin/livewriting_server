@@ -1157,30 +1157,17 @@ else{
           $("div.livewriting_slider_wrapper").toggleClass("histogram_slider_wrapper");
         });
 
-        var frame_width=1170;
-        var frame_height=600;
+        var frame_width=640;
+        var frame_height=360;
         var frame
         var link = window.location.href
 
-        $('#width_plus').click(function() {
-          frame_width++
-          frame = `<iframe width="${frame_width}" height="${frame_height}"  src="${link}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
-          $("#post-embed").text(frame);
-        })
-        $('#width_minus').click(function() {
-          frame_width<1||frame_width--
-          frame = `<iframe width="${frame_width}" height="${frame_height}"  src="${link}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
-          $("#post-embed").text(frame);
-        })
-        $('#height_plus').click(function() {
-          frame_height++
-          frame = `<iframe width="${frame_width}" height="${frame_height}"  src="${link}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
-          $("#post-embed").text(frame);
-        })
-        $('#height_minus').click(function() {
-          frame_height<1||frame_height--
-          frame = `<iframe width="${frame_width}" height="${frame_height}"  src="${link}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
-          $("#post-embed").text(frame);
+        $('#embed_size').change(function(event) {
+            var fullSize = event.target.value
+            frame_width = fullSize.split('*')[0]
+            frame_height = fullSize.split('*')[1]
+            frame = `<iframe width="${frame_width}" height="${frame_height}"  src="${link}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+            $("#post-embed").text(frame);
         })
 
         frame = `<iframe width="${frame_width}" height="${frame_height}"  src="${link}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`

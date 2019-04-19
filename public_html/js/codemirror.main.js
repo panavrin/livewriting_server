@@ -208,6 +208,7 @@ $(document).ready(function () {
         success:function(data, textStatus, jqXHR){
           $(".authform").addClass("lw_hidden");
           $(".signin").removeClass("lw_hidden");
+
           $("#login-failed-message").text("");
 
             var cookies = document.cookie.split(";");
