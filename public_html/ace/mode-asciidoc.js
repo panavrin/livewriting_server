@@ -167,7 +167,7 @@ var AsciidocHighlightRules = function() {
         literal: "support.function",
         optionalTitle: "constant.numeric",
         escape: "constant.language.escape",
-        link: "markup.underline.list"
+        link: "underline.list"
     };
 
     for (var state in this.$rules) {

@@ -266,7 +266,6 @@ $(document).ready(function () {
             success:function(data, textStatus, jqXHR){
                 if (data==''){
                     signupHandler(userData)
-                    signinHandler(userData)
                 } else{
                     signinHandler(userData)
                 }
@@ -384,8 +383,14 @@ $(document).ready(function () {
                             updateEmailforArticle(posted_id, data);
                         }
                     }
-                    else if (data == "login-failed"){
-                        $("#login-failed-message").text("Login Failed.")
+                    else if (data == "Oops! Wrong password." || data == ""){
+                        $("#login-failed-message").text("Oops! Wrong password.")
+                    }
+                    else if (data == "No user found."){
+                        $("#login-failed-message").text("No user found.")
+                    }
+                    else if (data == "You have an account already with the email address"){
+                        $("#login-failed-message").text("You have an account already with the email address")
                     }
                     else{
                         alert(textStatus);

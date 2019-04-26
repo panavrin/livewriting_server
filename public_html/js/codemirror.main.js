@@ -127,18 +127,32 @@ $(document).ready(function () {
         indentUnit:0,
         lineWrapping:true,
         mode:"Plain Text",
-        height:"100%"
+        height:"100%",
+        backdrop: "gfm",
     };
 
     var parameters = getUrlVars();
+    var editor
 
-    if (parameters.syntax != "undefined"){
-      options.mode = parameters.syntax;
-    }
+    // if (parameters.syntax != "undefined"){
+    //   options.mode = parameters.syntax;
+    // }
+    CodeMirrorSpellChecker({
+        codeMirrorInstance: CodeMirror,
+    });
+
+    $('#spell_check').on('change', function () {
+        var bull = $('#spell_check').is(':checked')
+        if (bull){
+            editor.setOption("mode", 'spell-checker');
+        }
+        else{
+            editor.setOption("mode", 'Plain Text');
+        }
+    })
 
 
-    var editor = CodeMirror.fromTextArea(document.getElementById("livetext"),options);
-
+    editor = CodeMirror.fromTextArea(document.getElementById("livetext"),options);
     editor.setSize("96%", "98%");
 
     var writeModeFunc = function(){
@@ -211,13 +225,7 @@ $(document).ready(function () {
 
           $("#login-failed-message").text("");
 
-            var cookies = document.cookie.split(";");
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = cookies[i];
-                    var eqPos = cookie.indexOf("=");
-                    var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-                    document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
-                }
+
             var scope = angular.element($("#list-livewriting")).scope();
             var popup_scope = angular.element($("#post-complete-message")).scope();
             scope.$apply(function () {
@@ -269,7 +277,6 @@ $(document).ready(function () {
             success:function(data, textStatus, jqXHR){
                 if (data==''){
                     signupHandler(userData)
-                    signinHandler(userData)
                 } else{
                     signinHandler(userData)
                 }
@@ -387,8 +394,14 @@ $(document).ready(function () {
                                 updateEmailforArticle(posted_id, data);
                             }
                         }
-                        else if (data == "login-failed"){
-                            $("#login-failed-message").text("Login Failed.")
+                        else if (data == "Oops! Wrong password." || data == ""){
+                            $("#login-failed-message").text("Oops! Wrong password.")
+                        }
+                        else if (data == "No user found."){
+                            $("#login-failed-message").text("No user found.")
+                        }
+                        else if (data == "You have an account already with the email address"){
+                            $("#login-failed-message").text("You have an account already with the email address")
                         }
                         else{
                             alert(textStatus);

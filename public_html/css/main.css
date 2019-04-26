@@ -225,3 +225,15 @@ box-shadow: 3px 0 6px 3px gray;
   display:inline-block;
   margin: auto auto -2px auto;
 }
+.CodeMirror .cm-spell-error{
+    background: url('./images/underline.gif') bottom repeat-x !important;
+}
+
+.social div:hover{
+    border: 1px solid #ffffff;
+    transition: 0.5s;
+}
+
+.social #github-button:hover{
+    border: 1px solid #000000;
+}

@@ -7,14 +7,12 @@ app.controller('main-controller',[ '$scope', '$http', function($scope, $http) {
   $scope.maxOffset = 0;
   $scope.numArticlePerPage =20;
   $scope.error= false;
-  $scope.link = livewritingLink + "?aid=";
+  $scope.link = livewritingLink;
   $scope.next = false;
   $scope.isLoggedIn = false;
   $scope.error_message="";
   $scope.offset = 0;
   $scope.signin = function(){
-    console.log("signin-email", $scope.signin_email);
-    console.log("signin-password", $scope.signin_password);
     $http.post('/admin-login', {email:$scope.signin_email, password:$scope.signin_password}, {})
     .then(function(response){
         if(response.data == "admin-login-successful"){
@@ -79,5 +77,4 @@ app.controller('main-controller',[ '$scope', '$http', function($scope, $http) {
       alert(time, time2);
     }
   };
-
 }]);

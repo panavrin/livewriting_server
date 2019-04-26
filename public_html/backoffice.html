@@ -74,13 +74,19 @@
       <div ng-show = "isLoggedIn">
         <div ng-repeat = "article in list" class = "row" style = "margin: 10px;">
 
-          <div class = "col-md-6 col-lg-6 col-sm-6">
-            <a ng-href="{{link+article._id}}" target=_blank>
+          <div class = "col-md-6 col-lg-6 col-sm-6" ng-if="article.editor_type=='codemirror'">
+            <a ng-href="{{link+'?aid='+article._id}}" target=_blank>
               <button class = "btn btn-success btn-sm">Open</button>
             </a>
-            {{article.useroptions.url}}
-            ,{{article.useroptions.email}}
+            {{article.useroptions.email}},
           <!--  <button class = "btn btn-warning btn-sm" ng-click="alert('share');">Share</button>-->
+          </div>
+          <div class = "col-md-6 col-lg-6 col-sm-6" ng-if="article.editor_type=='ace'">
+            <a ng-href="{{link+'index_ace.html'+'?aid='+article._id}}" target=_blank>
+              <button class = "btn btn-success btn-sm">Open</button>
+            </a>
+            {{article.useroptions.email}},
+            <!--  <button class = "btn btn-warning btn-sm" ng-click="alert('share');">Share</button>-->
           </div>
           <div class = "col-md-6 col-lg-6 col-sm-6">
           {{timeToDate(article.servertime, article.useroptions.servertime)}}

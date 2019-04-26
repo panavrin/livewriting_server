@@ -13,7 +13,7 @@ var RSTHighlightRules = function() {
     table: "constant",
     directive: "keyword.operator",
     entity: "string",
-    link: "markup.underline.list",
+    link: "underline.list",
     bold: "markup.bold",
     italic: "markup.italic",
     literal: "support.function",
