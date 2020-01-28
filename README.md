@@ -1,4 +1,4 @@
-# Instllation
+# Installation
 1. Install npm. 
 2. Install Mongodb
 3. Install node modules by runnining the following 
@@ -12,6 +12,13 @@ mkdir data
 ```
 mongod --dbpath ./data
 npm start
+```
+
+OR
+
+Run the start-up script 
+```
+./start.sh
 ```
 
 # livewriting
