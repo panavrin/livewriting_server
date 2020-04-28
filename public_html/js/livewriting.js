@@ -7,6 +7,7 @@ All rights reserved.
 /*global $, jQuery, alert*/
 /*global define */
 var DEBUG = false;
+var snapshotReplay = true;
 /* ****
 live writing requires jQuery and jQuery-ui
 */
@@ -33,6 +34,8 @@ if ( typeof lw_jQuery == "undefined"){
 }
 else{
   if(DEBUG)console.log("jQuery detected live writing running ");
+
+
 
   var livewriting = (function ($) {
   "use strict";
@@ -587,41 +590,57 @@ else{
           }
           it.getDoc().getEditor().focus();
           if(DEBUG) console.log("reverse:" + reverse + " " + JSON.stringify(event));
+          if (DEBUG) console.log("Event: "+  event);
+            
+          if (snapshotReplay)
+               it.getDoc().setValue(event.snapshot.join(''));
+
           if (event['p'] == "c"){ // change in content
-              var inputData    = event['d'];
-              var startLine = inputData['from']['line'],
-                  startCh = inputData['from']['ch'],
-                  endLine = inputData['from']['line'],
-                  endCh = inputData['from']['ch'],
-                  inputType = inputData['origin'],
-                  text = inputData['text'];
-
-              if(reverse){
-                var removed = inputData['removed'];
-                var toRemove = {"line": text.length-1 + startLine, "ch": (text.length ==1 ? startCh + text[0].length : text[removed.length-1].length)}
-                it.getDoc().setSelection(inputData['from'], toRemove, {scroll:true});
-                removed = removed.join('\n');
-                it.getDoc().replaceSelection(removed);
-              }
-              else{
-                var joined_text = text.join('\n');
-                jumptoLineCodeMirror(it,inputData.from.line);
-                it.getDoc().setSelection(inputData['from'], inputData['to']);
-                it.getDoc().replaceSelection(joined_text);
-                var to = {line:inputData.from.line, ch:inputData.from.ch};
-                if (text.length == 1) // same line
-                {
-                  to.ch += joined_text.length;
-                }else{ // text.length>1
-                  to.line += text.length - 1;
-                  to.ch = text[text.length-1].length;
+                if (snapshotReplay){
+                      //change cursor
+                       var eventCharAdded = Object.assign({}, event.d.to);
+                       eventCharAdded.ch++;
+                       it.getDoc().setCursor(eventCharAdded);
                 }
-                var obj = it.getDoc().markText(inputData['from'], to, {className:"cm-change-markers"});
-                setTimeout(function(){
-                  obj.clear();
-                },CM_MARKER_CLEAR_TIME / it.lw_playback );
+                else{
+                    var inputData    = event['d'];
+                    var startLine = inputData['from']['line'],
+                        startCh = inputData['from']['ch'],
+                        endLine = inputData['from']['line'],
+                        endCh = inputData['from']['ch'],
+                        inputType = inputData['origin'],
+                        text = inputData['text'];
 
-              }
+                    if(reverse){
+                      var removed = inputData['removed'];
+                      var toRemove = {"line": text.length-1 + startLine, "ch": (text.length ==1 ? startCh + text[0].length : text[removed.length-1].length)}
+                      it.getDoc().setSelection(inputData['from'], toRemove, {scroll:true});
+                      removed = removed.join('\n');
+                      it.getDoc().replaceSelection(removed);
+                    }
+                    else{
+                      var joined_text = text.join('\n');
+                      jumptoLineCodeMirror(it,inputData.from.line);
+                      it.getDoc().setSelection(inputData['from'], inputData['to']);
+                      it.getDoc().replaceSelection(joined_text);
+                      var to = {line:inputData.from.line, ch:inputData.from.ch};
+                      if (text.length == 1) // same line
+                      {
+                        to.ch += joined_text.length;
+                      }else{ // text.length>1
+                        to.line += text.length - 1;
+                        to.ch = text[text.length-1].length;
+                      }
+                      var obj = it.getDoc().markText(inputData['from'], to, {className:"cm-change-markers"});
+                      setTimeout(function(){
+                        obj.clear();
+                      },CM_MARKER_CLEAR_TIME / it.lw_playback );
+
+                    }
+                }
+
+         
+          
 
           }
           else if (event['p'] == "u"){ // cursor change
@@ -1273,20 +1292,39 @@ else{
         {
           while(it.lw_data_index>0  && time < it.lw_data[it.lw_data_index-1].t){
             it.lw_data_index--;
-            it.lw_triggerPlay(true, true);
-            it.lw_data_index++;
+            if (!snapshotReplay){
+                  it.lw_triggerPlay(true, true);
+                  it.lw_data_index++;
+            }     
             it.lw_data_index = Math.max(it.lw_data_index,0);
             if(DEBUG)console.log("slider backward:" + it.lw_data_index);
             if(DEBUG)console.log("value:" + it.getValue() + "length:" + it.getValue().length);
           }
+          if (snapshotReplay)
+          {
+                it.lw_triggerPlay(true, true);
+                it.lw_data_index++; 
+          }
         } else { // forward case
           while(it.lw_data_index<it.lw_data.length
             && time > it.lw_data[it.lw_data_index].t){
+                   if(DEBUG)console.log("slider forward(time:" + time + "):" + it.lw_data_index);
+                  if(DEBUG)console.log("data index time: " + it.lw_data[it.lw_data_index].t);
+                  if (!snapshotReplay){
+                      it.lw_triggerPlay(false, true);
+                  }
+                  else{
+                        it.lw_data_index++;
+                  }
               //            && it.lw_sliderValue < it.lw_data[it.lw_data_index].t){
-            it.lw_triggerPlay(false, true);
-            if(DEBUG)console.log("slider forward(time:" + time + "):" + it.lw_data_index);
-            if(DEBUG)console.log("value:" + it.getValue());
+
+            //if(DEBUG)console.log("value:" + it.getValue());
           }
+          if (snapshotReplay){
+                if (it.lw_data_index == it.lw_data.length)
+                  it.lw_data_index-= 2; 
+                it.lw_triggerPlay(false, true);
+          }   
         }
         // this handles forward when pause.
         //if(it.lw_pause){
@@ -1645,6 +1683,78 @@ else{
 //it.$blockScrolling = Infinity;
         }
 
+
+         //establish initial snapshot as blank
+            //snapshots are stored as arrays of strings
+            //with each line at an index 
+        
+        for (i=0; i < json_file.action.length; i++)
+        {            
+            var delta = json_file.action[i].d;
+
+            //if there is no delta, just copy snapshot, move along
+            if (delta == undefined) { 
+               json_file.action[i].snapshot = json_file.action[i-1].snapshot.slice();
+               continue;
+            }
+
+            //if first frame, find max num lines, make 
+            var snapshot;
+            if (i == 0) {
+                var maxLine = Math.max.apply(null, json_file.action.map(function(action){
+                      if (action.d != undefined && action.d.to != undefined) {
+                            return action.d.to.line; 
+                      }
+                      else {
+                            return 0;
+                      }
+                }));
+
+                snapshot = Array(maxLine+1).fill("");               
+            }   
+            else {
+                snapshot = json_file.action[i-1].snapshot.slice(); 
+            }
+                
+            var selectionStart = delta.from;
+            var selectionEnd = delta.to;
+
+            if (delta.removed != "") //of removal made
+            {
+                  //if selection on same line
+                  if (selectionStart.line == selectionEnd.line){
+                       var lineToEdit = snapshot[selectionStart.line];
+                       snapshot[selectionStart.line] = [lineToEdit.slice(0,selectionStart.ch),lineToEdit.slice(selectionEnd.ch)].join('');
+                  }
+                  else
+                  {
+                      //First, delete all full lines in selection
+                        for (var j = selectionStart.line+1; j <= selectionEnd.line; j++)
+                              snapshot[j] = "";  
+                      //Delete portion of other lines
+                      snapshot[selectionStart.line] = snapshot[selectionStart.line].slice(0,selectionStart.ch);
+                      snapshot[selectionEnd.line] = snapshot[selectionEnd.line].slice(selectionEnd.ch);
+           
+                  }
+   
+            }
+            else if (delta.text != "")   //if addition made
+            {    
+                  if (delta.text.length == 2){
+                         snapshot[selectionStart.line] += "\n"; 
+                  }   
+                  else{
+                        var line = snapshot[selectionStart.line];
+                        var newLine = [line.slice(0,selectionStart.ch),delta.text[0],line.slice(selectionStart.ch)].join('');
+                        snapshot[selectionStart.line] = newLine;   
+                  }
+                                  
+            }
+            json_file.action[i].snapshot = snapshot;
+        }
+
+
+
 // de-register event handler.
         if ( it.lw_type  == "textarea"){
             it.onkeyup = null;
@@ -1945,8 +2055,8 @@ else{
   }(lw_jQuery));
   // Export for node
   if (typeof module !== 'undefined' && module.exports) {
-  	/** @exports livewriting */
-  	module.exports = livewriting;
+    /** @exports livewriting */
+    module.exports = livewriting;
   }
 
 }
