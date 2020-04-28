@@ -37,6 +37,11 @@ else{
   var livewriting = (function ($) {
   "use strict";
 
+      //Get ip address
+      var ip;
+      $.get('https://www.cloudflare.com/cdn-cgi/trace', function(data){
+        ip = data.split('\n')[2].slice(3)});
+
       var INSTANTPLAYBACK = false,
       SLIDER_UPDATE_INTERVAL = 100,
       INACTIVE_SKIP_THRESHOLD = 2000,
@@ -82,6 +87,21 @@ else{
               vars[hash[0]] = hash[1];
           }
           return vars;
+      },
+      //Interaction tracing
+      interactionTrace = function (logObj){
+      //Receives a log obj: {event:"event type"}, and any additional data
+      //Adds timestamp, aid, and IP address
+      //Posts logObj to mongoDB server
+      logObj.timestamp = (new Date()).getTime();
+      logObj.aid = getUrlVar('aid');
+      logObj.ip = ip;
+      $.ajax({
+        url:'/interactiontracing', 
+        type:"post", 
+        data:JSON.stringify(logObj), contentType:"text/plain"
+      });
+      if (DEBUG) console.log('Logged Interaction:' + logObj);
       },
       setCursorPosition = function(input, selectionStart, selectionEnd) {
           if (input.setSelectionRange) {
@@ -946,6 +966,10 @@ else{
           }
         };
 
+        var logObj = {event: "play/pause"};
+        interactionTrace(logObj);
+
+
         $( ".lw_toolbar_play" ).button( "option", options );
         it.lw_pause = false;
         var time  = $(".livewriting_slider").slider("value");
@@ -957,6 +981,7 @@ else{
         updateSlider(it);
       },
       sliderGoToEnd = function(it){
+        interactionTrace({event: "sliderEnd"});
         var max = $( ".livewriting_slider" ).slider( "option", "max" );
         if(it.lw_type == "ace"){
           it.setValue(it.lw_finaltext);
@@ -973,6 +998,8 @@ else{
       //  updateSlider(it);
       },
       sliderGoToBeginning = function(it){
+         interactionTrace({event: "sliderBeginning"});
+
         if(it.lw_type == "ace"){
           it.setValue(it.lw_initialText)
         }
@@ -987,6 +1014,8 @@ else{
         //updateSlider(it);
       },
       livewritingPause = function(it){
+        interactionTrace({'event': "play/pause"});
+            
         it.lw_pause = true;
         clearTimeout(it.lw_next_event);
         var options = {
@@ -1035,6 +1064,7 @@ else{
             primary: "ui-icon-radio-on"
           }
         }).click(function(){
+              interactionTrace({'event': 'toggleNipple'});
           $("#lw-jog-shuttle").toggle();
           $("#lw_jogshuttle_toggle .ui-button-text").toggleClass("ui-button-text-toggle");
         });
@@ -1056,7 +1086,12 @@ else{
         });
 
         var speedSliderUpdate = function(event, ui){
+
+
           var value  = $("#lw_playback_slider").slider("value")/10.0;
+
+          //Interaction trace
+          interactionTrace({'event': 'speed slider', sliderValue: value});
 
           it.lw_playback = Math.pow(2.0, value) ;
 
@@ -1152,6 +1187,7 @@ else{
             primary:"ui-icon-image"
           }
         }).click(function(e){
+              interactionTrace({'event': 'stats'});
           $("#lw_toolbar_stat .ui-button-text").toggleClass("ui-button-text-toggle");
           $("#livewriting_histogram").toggle();
           $("div.livewriting_slider_wrapper").toggleClass("histogram_slider_wrapper");
@@ -1178,6 +1214,7 @@ else{
             primary:"ui-icon-link"
           }
         }).click(function(e){
+              interactionTrace({'event': 'share'});
           $('#embed_modal').bPopup({
             modalClose: false,
             opacity: 0.7,
@@ -1208,6 +1245,7 @@ else{
             primary:"ui-icon-arrowreturnthick-1-n"
           }
         }).click(function(e){
+              interactionTrace({'event': 'skipInactiveToggle'});
           it.lw_skip_inactive = !it.lw_skip_inactive;
           $("#lw_toolbar_skip .ui-button-text").toggleClass("ui-button-text-toggle");
           if(it.lw_skip_inactive){
@@ -1223,6 +1261,9 @@ else{
         });
       },
       sliderEventHandler = function(it,value){
+
+        interactionTrace({'event': 'sliderEvent', 'value': value});
+
         var time  = value ;
         var currentTime = (new Date()).getTime();
         it.lw_startTime = currentTime - time/it.lw_playback;
