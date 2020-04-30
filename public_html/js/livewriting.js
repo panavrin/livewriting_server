@@ -7,7 +7,7 @@ All rights reserved.
 /*global $, jQuery, alert*/
 /*global define */
 var DEBUG = false;
-var snapshotReplay = true;
+var snapshotReplay = false;
 /* ****
 live writing requires jQuery and jQuery-ui
 */
@@ -1886,6 +1886,9 @@ else{
 
       var livewritingMainfunction = function (message, option1, option2, option3){
           var it;
+
+          //Toggle snapshopt replay based on url parameter
+          snapshotReplay = getUrlVar('snapshotReplay');
 
           if ($(this).length==1){
               it = $(this)[0];
