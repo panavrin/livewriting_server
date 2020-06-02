@@ -42,8 +42,7 @@ else{
 
       //Get ip address
       var ip;
-      $.get('https://www.cloudflare.com/cdn-cgi/trace', function(data){
-        ip = data.split('\n')[2].slice(3)});
+      $.get('https://api.ipify.org/', function(data){ip = data});
 
       var INSTANTPLAYBACK = false,
       SLIDER_UPDATE_INTERVAL = 100,
