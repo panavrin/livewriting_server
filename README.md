@@ -56,3 +56,29 @@ Please contact sangwonlee@vt.edu for more detail.
 * scroll added
 
 0.0.1 initial commit
+
+# livewriting server firewall
+node.js was not working and that iptables solved it.
+
+```
+iptables -I INPUT -p tcp --dport 8080 -j ACCEPT
+iptables -I INPUT -p tcp --dport 80 -j ACCEPT
+iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080 
+```
+
+https://serverfault.com/questions/163111/allow-traffic-to-from-specific-ip-with-iptables
+
+for https: 
+
+```
+iptables -I INPUT -p tcp --dport 443 -j ACCEPT
+iptables -A INPUT -p tcp --dport 443 -s 0.0.0.0 -j ACCEPT
+```
+```
+netstat -tulpn 
+```
+
+--> routing 80 request to a specific port (8080) in this case. 
+
+
+Also you have to listen from all ips (0.0.0.0)
