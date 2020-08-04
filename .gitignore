@@ -26,3 +26,5 @@ mongod.lock
 WiredTiger
 
 *.bson
+lib/server.cert
+lib/server.key

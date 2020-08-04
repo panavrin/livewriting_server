@@ -1,3 +1,3 @@
 mongod --dbpath ./data
-echo 'VIEW APP AT http://localhost:2401'
+echo 'VIEW APP AT http://localhost:443'
 npm start

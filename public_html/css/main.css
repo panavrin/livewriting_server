@@ -31,13 +31,14 @@ body{
   background: #555;
 }
 
+/*
 .text {
 font-family:Verdana, Arial, Helvetica, sans-serif;
-font-size:20px;
+font-size:10px;
 color:#000000;
 padding:15px;
     line-height: 40px;
-}
+}*/
 
 .centre {
 }
@@ -91,7 +92,7 @@ textarea {  /* position is inherited */
     box-shadow: none;
     outline:0px /*!important;*/;
     -webkit-appearance:none;
-    font-size: 20pt;
+    font-size: 100pt;
     font-family: Courier New;
 }
  .slider{

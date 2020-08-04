@@ -6,7 +6,7 @@ All rights reserved.
 /*jslint browser: true*/
 /*global $, jQuery, alert*/
 /*global define */
-var DEBUG = false;
+var DEBUG = true;
 var snapshotReplay = false;
 /* ****
 live writing requires jQuery and jQuery-ui
@@ -43,6 +43,13 @@ else{
       //Get ip address
       var ip;
       $.get('https://api.ipify.org/', function(data){ip = data});
+
+      //Record time spent on screen
+      var start = new Date();
+      window.onbeforeunload = function(event){
+      	var end = new Date();
+      	interactionTrace({'event':'unload', 'value': end - start});
+      };
 
       var INSTANTPLAYBACK = false,
       SLIDER_UPDATE_INTERVAL = 100,
@@ -103,11 +110,11 @@ else{
         type:"post", 
         data:JSON.stringify(logObj), contentType:"text/plain"
       });
-      if (DEBUG) console.log('Logged Interaction:' + logObj);
+      if (DEBUG) console.log('Logged Interaction:', logObj);
       },
       setCursorPosition = function(input, selectionStart, selectionEnd) {
           if (input.setSelectionRange) {
-              input.focus();
+              //input.focus();
               input.setSelectionRange(selectionStart, selectionEnd);
           }
           else if (input.createTextRange) {
@@ -139,7 +146,7 @@ else{
               pos[1] = el.selectionEnd;
           } else if ('selection' in document) {
               // have not checked in IE browsers
-              el.focus();
+              // el.focus();
               var Sel = document.selection.createRange(),
                   SelLength = document.selection.createRange().text.length;
               Sel.moveStart('character', -el.value.length);
@@ -587,7 +594,7 @@ else{
           if (skipSchedule && event['p'] != "c"){
             return;
           }
-          it.getDoc().getEditor().focus();
+          //it.getDoc().getEditor().focus();
           if(DEBUG) console.log("reverse:" + reverse + " " + JSON.stringify(event));
           if (DEBUG) console.log("Event: "+  event);
             
@@ -813,7 +820,7 @@ else{
                   if(keycode == 13) charvalue = "\n"; // only happens for the stuff befroe version 2
 
                   if (document.selection) {
-                      it.focus();
+                      // it.focus();
                       sel = document.selection.createRange();
                       sel.text = charvalue;
                   }else{
@@ -984,7 +991,7 @@ else{
           }
         };
 
-        var logObj = {event: "play/pause"};
+        var logObj = {event: "play"};
         interactionTrace(logObj);
 
 
@@ -1032,7 +1039,7 @@ else{
         //updateSlider(it);
       },
       livewritingPause = function(it){
-        interactionTrace({'event': "play/pause"});
+        interactionTrace({'event': "pause"});
             
         it.lw_pause = true;
         clearTimeout(it.lw_next_event);
@@ -1107,15 +1114,15 @@ else{
 
 
           var value  = $("#lw_playback_slider").slider("value")/10.0;
+          it.lw_playback = Math.pow(2.0, value) ;
 
           //Interaction trace
-          interactionTrace({'event': 'speed slider', sliderValue: value});
-
-          it.lw_playback = Math.pow(2.0, value) ;
+          interactionTrace({'event': 'speed slider', value: it.lw_playback.toFixed(1)});
 
           var time  = $(".livewriting_slider").slider("value");
           var currentTime = (new Date()).getTime();
           it.lw_startTime = currentTime - time/it.lw_playback;
+
 
           $(".livewriting_speed>span").text(it.lw_playback.toFixed(1) + " X");
         };
@@ -1280,7 +1287,11 @@ else{
       },
       sliderEventHandler = function(it,value){
 
-        interactionTrace({'event': 'sliderEvent', 'value': value});
+      	var lengthPlayback = it.lw_data[it.lw_data.length-1].t;
+      	var percentageOfTotal = value/lengthPlayback;
+      	if (value/lengthPlayback > 1)
+      		percentageOfTotal = 1;
+        interactionTrace({'event': 'sliderEvent', 'value': percentageOfTotal});
 
         var time  = value ;
         var currentTime = (new Date()).getTime();
@@ -1787,7 +1798,7 @@ else{
         }
         it.lw_scheduleNextEvent = scheduleNextEventFunc;
 
-        it.focus();
+        //it.focus();
 
         if(DEBUG)console.log(it.lw_settings.name);
         it.lw_version = json_file["version"];
